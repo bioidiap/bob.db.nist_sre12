@@ -113,12 +113,12 @@ def test_query():
   assert len(db.objects(protocol='male', groups='world', subworld='optional_world_2', world_gender='female')) == 17810
   assert len(db.objects(protocol='male', groups='world', subworld='optional_world_2')) == 31524
 
-  assert len(db.objects(protocol='male', groups='dev', purposes='enrol')) == 16941
-  assert len(db.objects(protocol='male', groups='dev', purposes='enrol', model_ids='MIX104296_M')) == 12
+  assert len(db.objects(protocol='male', groups='dev', purposes='enroll')) == 16941
+  assert len(db.objects(protocol='male', groups='dev', purposes='enroll', model_ids='MIX104296_M')) == 12
   assert len(db.objects(protocol='male', groups='dev', purposes='probe')) == 19866
 
-  assert len(db.objects(protocol='male', groups='eval', purposes='enrol')) == 47480 # 47486 (see LOGS)
-  assert len(db.objects(protocol='male', groups='eval', purposes='enrol', model_ids='MIX104296_M')) == 21
+  assert len(db.objects(protocol='male', groups='eval', purposes='enroll')) == 47480 # 47486 (see LOGS)
+  assert len(db.objects(protocol='male', groups='eval', purposes='enroll', model_ids='MIX104296_M')) == 21
   assert len(db.objects(protocol='male', groups='eval', purposes='probe')) == 29728
 
   # For Female protocol
@@ -184,12 +184,12 @@ def test_query():
   assert len(db.objects(protocol='female', groups='world', subworld='optional_world_2', world_gender='male')) == 13714
   assert len(db.objects(protocol='female', groups='world', subworld='optional_world_2')) == 31524
 
-  assert len(db.objects(protocol='female', groups='dev', purposes='enrol')) == 24693
-  assert len(db.objects(protocol='female', groups='dev', purposes='enrol', model_ids='MIX108878_F')) == 30
+  assert len(db.objects(protocol='female', groups='dev', purposes='enroll')) == 24693
+  assert len(db.objects(protocol='female', groups='dev', purposes='enroll', model_ids='MIX108878_F')) == 30
   assert len(db.objects(protocol='female', groups='dev', purposes='probe')) == 25980
 
-  assert len(db.objects(protocol='female', groups='eval', purposes='enrol')) == 66192 # 66220 (see LOGS)
-  assert len(db.objects(protocol='female', groups='eval', purposes='enrol', model_ids='MIX108878_F')) == 33
+  assert len(db.objects(protocol='female', groups='eval', purposes='enroll')) == 66192 # 66220 (see LOGS)
+  assert len(db.objects(protocol='female', groups='eval', purposes='enroll', model_ids='MIX108878_F')) == 33
   assert len(db.objects(protocol='female', groups='eval', purposes='probe')) == 43378
 
 

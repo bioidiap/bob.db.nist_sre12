@@ -100,7 +100,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
     if 'eval' in groups: degroups.append('eval')
     if len(degroups) > 0:
       q = self.query(Client).join((ProtocolPurpose, Client.protocolPurposes)).join((Protocol, ProtocolPurpose.protocol)).\
-            filter(Protocol.name.in_(protocol)).filter(ProtocolPurpose.sgroup.in_(degroups)).filter(ProtocolPurpose.purpose == 'enrol').\
+            filter(Protocol.name.in_(protocol)).filter(ProtocolPurpose.sgroup.in_(degroups)).filter(ProtocolPurpose.purpose == 'enroll').\
             order_by(Client.id)
       if filter_ids_unknown == True:
         q = q.filter(not_(Client.id.in_(['F_ID_X_F', 'M_ID_X_M'])))
@@ -272,7 +272,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
       The protocol to consider ('female', 'male')
 
     purposes
-      The purposes required to be retrieved ('enrol', 'probe', 'train') or a tuple
+      The purposes required to be retrieved ('enroll', 'probe', 'train') or a tuple
       with several of them. If 'None' is given (this is the default), it is
       considered the same as a tuple with all possible values. This field is
       ignored for the data from the "world" group.
@@ -337,9 +337,9 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
       retval += list(q)
 
     if ('dev' in groups or 'eval' in groups):
-      if('enrol' in purposes):
+      if('enroll' in purposes):
         q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
-              filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enrol'))
+              filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll'))
         if model_ids:
           q = q.filter(File.client_id.in_(model_ids))
         q = q.order_by(File.path, File.client_id)

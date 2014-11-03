@@ -70,7 +70,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   protocols = os.listdir(protocol_dir)
 
   # 2. ADDITIONS TO THE SQL DATABASE
-  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enrol', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enrol', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
+  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enroll', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
   for proto in protocols:
     p = Protocol(proto)
     # Add protocol

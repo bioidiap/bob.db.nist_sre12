@@ -23,7 +23,7 @@ from setuptools import setup, find_packages
 setup(
 
     name='bob.db.nist_sre12',
-    version='1.2.0a0',
+    version='2.0.0a0',
     description='Speaker verification protocol on the NIST SRE 2012',
     url='https://pypi.python.org/pypi/bob.db.nist_sre12',
     license='GPLv3',
@@ -57,6 +57,7 @@ setup(
     },
 
     classifiers = [
+      'Framework :: Bob',
       'Development Status :: 4 - Beta',
       'Environment :: Console',
       'Intended Audience :: Developers',
