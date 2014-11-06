@@ -18,12 +18,15 @@
 
 from setuptools import setup, find_packages
 
+# Define package version
+version = open("version.txt").read().rstrip()
+
 # The only thing we do in this file is to call the setup() function with all
 # parameters that define our package.
 setup(
 
     name='bob.db.nist_sre12',
-    version='2.0.0a0',
+    version=version,
     description='Speaker verification protocol on the NIST SRE 2012',
     url='https://pypi.python.org/pypi/bob.db.nist_sre12',
     license='GPLv3',
