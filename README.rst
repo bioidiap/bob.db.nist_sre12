@@ -6,7 +6,7 @@
    :target: http://pythonhosted.org/bob.db.nist_sre12/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.png
    :target: https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.nist_sre12/master/index.html
-.. image:: https://travis-ci.org/bioidiap/bob.db.nist_sre12.svg?branch=master
+.. image:: https://travis-ci.org/bioidiap/bob.db.nist_sre12.svg?branch=v2.0.4
    :target: https://travis-ci.org/bioidiap/bob.db.nist_sre12
 .. image:: https://coveralls.io/repos/bioidiap/bob.db.nist_sre12/badge.png
    :target: https://coveralls.io/r/bioidiap/bob.db.nist_sre12
