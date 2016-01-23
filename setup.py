@@ -32,7 +32,7 @@ setup(
     name='bob.db.nist_sre12',
     version=version,
     description='Speaker verification protocol on the NIST SRE 2012',
-    url='https://pypi.python.org/pypi/bob.db.nist_sre12',
+    url='https://github.com/bioidiap/bob.db.nist_sre12',
     license='GPLv3',
     author='Elie Khoury',
     author_email='Elie.Khoury@idiap.ch',
