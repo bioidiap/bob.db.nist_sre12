@@ -46,6 +46,14 @@ def test_query():
 
   db = bob.db.nist_sre12.Database()
 
+  files = db.objects(protocol='female', groups='eval', purposes='enroll')
+
+  import ipdb ; ipdb.set_trace()
+
+  x = files[0].load ('/idiap/resource/database/nist_sre/SRE12/r141_2_1/sp12-01','.sph')
+
+  return
+
   assert len(db.groups()) == 5
   assert len(db.groups(protocol='male')) == 5
   assert len(db.groups(protocol='female')) == 5

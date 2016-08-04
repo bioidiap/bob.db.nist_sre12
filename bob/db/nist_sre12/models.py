@@ -25,6 +25,9 @@ from bob.db.base.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
 
+import scipy.io.wavfile
+import tempfile
+
 import bob.db.base
 
 Base = declarative_base()
@@ -107,6 +110,51 @@ class File(Base, bob.db.base.File):
       return str(os.path.join(directory or '', self.path + '-' + self.side + (extension or '')))
     else:
       return str(os.path.join(directory or '', self.path + (extension or '')))
+
+  def load(self, directory=None, extension='.sph'):
+    """Loads the data at the specified location and using the given extension.
+    Override it if you need to load differently.
+
+    Keyword Parameters:
+
+    data
+      The data blob to be saved (normally a :py:class:`numpy.ndarray`).
+
+    directory
+      [optional] If not empty or None, this directory is prefixed to the final
+      file destination
+
+    extension
+      [optional] The extension of the filename - this will control the type of
+      output and the codec for saving the input blob.
+
+    """
+    # get the path
+    abspath = self.make_path(directory or '', extension or '', add_side=False)
+    with tempfile.NamedTemporaryFile(suffix='.wav') as ftmp:
+      sph2pipeDir = '/idiap/home/mferras/bin'
+      cmd = [sph2pipeDir + '/sph2pipe']
+      if self.side == 'a':
+        cmd += [
+          '-c 1',
+          '-p',
+          '-f rif',
+          abspath,
+          ftmp.name]
+      else:
+        cmd += [
+          '-c 2',
+          '-p',
+          '-f rif',
+          abspath,
+          ftmp.name]
+      os.system (' '.join(cmd))
+
+      # read mono wav file
+      rate, audio = scipy.io.wavfile.read(ftmp.name)
+      data = numpy.cast['float'](audio)
+      return rate, data
+    
 
 
 class Protocol(Base):
