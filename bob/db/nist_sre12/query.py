@@ -25,11 +25,11 @@ from bob.db.base import utils
 from .models import *
 from .driver import Interface
 
-import bob.db.verification.utils
+import bob.db.base
 
 SQLITE_FILE = Interface().files()[0]
 
-class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.utils.ZTDatabase):
+class Database(bob.db.base.SQLiteDatabase):
   """The dataset class opens and maintains a connection opened to the Database.
 
   It provides many different ways to probe for the characteristics of the data
@@ -38,7 +38,8 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
 
   def __init__(self, original_directory = None, original_extension = ".sph"):
     # call base class constructors
-    bob.db.verification.utils.SQLiteDatabase.__init__(self, SQLITE_FILE, File, original_directory = original_directory, original_extension = original_extension)
+#    bob.db.base.SQLiteDatabase.__init__(self, SQLITE_FILE, File, original_directory = original_directory, original_extension = original_extension)
+    bob.db.base.SQLiteDatabase.__init__(self, SQLITE_FILE, File)
 
   def groups(self, protocol=None):
     """Returns the names of all registered groups"""
@@ -54,7 +55,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
       The protocol to consider ('female', 'male')
 
     groups
-      The groups to which the clients belong ('dev', 'eval', 'world', 'optional_world_1', 'optional_world_2')
+      The groups to which the clients belong ('eval')
 
     world_gender
       The gender to consider for the world data ('female', 'male')
@@ -318,31 +319,31 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
 
     # Now query the database
     retval = []
-    wgroups = []
-    if 'world' in groups:
-      if len(subworld) == 2:
-        wgroups.append('world')
-      elif len(subworld) == 1 and 'world' in groups:
-        wgroups.append(subworld[0])
-    if 'optional_world_1' in groups: wgroups.append('optional_world_1')
-    if 'optional_world_2' in groups: wgroups.append('optional_world_2')
-    if len(wgroups) > 0:
-      q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol)
-      q = q.filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(wgroups)))
-      if len(world_gender) == 1:
-        q = q.filter(Client.gender.in_(world_gender))
-      if model_ids:
-        q = q.filter(Client.id.in_(model_ids))
-      q = q.order_by(File.path, File.client_id)
-      retval += list(q)
+#    wgroups = []
+#    if 'world' in groups:
+#      if len(subworld) == 2:
+#        wgroups.append('world')
+#      elif len(subworld) == 1 and 'world' in groups:
+#        wgroups.append(subworld[0])
+#    if 'optional_world_1' in groups: wgroups.append('optional_world_1')
+#    if 'optional_world_2' in groups: wgroups.append('optional_world_2')
+#    if len(wgroups) > 0:
+#      q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol)
+#      q = q.filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(wgroups)))
+#      if len(world_gender) == 1:
+#        q = q.filter(Client.gender.in_(world_gender))
+#      if model_ids:
+#        q = q.filter(Client.id.in_(model_ids))
+#      q = q.order_by(File.path, File.side, File.client_id)
+#      retval += list(q)
 
-    if ('dev' in groups or 'eval' in groups):
+    if ('eval' in groups):
       if('enroll' in purposes):
         q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
               filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll'))
         if model_ids:
           q = q.filter(File.client_id.in_(model_ids))
-        q = q.order_by(File.path, File.client_id)
+        q = q.order_by(File.path, File.side, File.client_id)
         retval += list(q)
 
       if('probe' in purposes):
@@ -351,15 +352,7 @@ class Database(bob.db.verification.utils.SQLiteDatabase, bob.db.verification.uti
                 filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
           if model_ids:
             q = q.filter(Client.id.in_(model_ids))
-          q = q.order_by(File.path, File.client_id)
-          retval += list(q)
-
-        if('impostor' in classes):
-          q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
-                filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe'))
-          if len(model_ids) == 1:
-            q = q.filter(not_(File.client_id.in_(model_ids)))
-          q = q.order_by(File.path, File.client_id)
+          q = q.order_by(File.path, File.side, File.client_id)
           retval += list(q)
 
     return list(set(retval)) # To remove duplicates
