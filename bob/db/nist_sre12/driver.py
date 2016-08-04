@@ -63,7 +63,7 @@ def checkfiles(args):
   good = []
   bad = []
   for f in r:
-    if os.path.exists(f.make_path(args.directory, args.extension)):
+    if os.path.exists(f.make_path(args.directory, args.extension, add_side=False)):
       good.append(f)
     else:
       bad.append(f)
@@ -79,6 +79,8 @@ def checkfiles(args):
       output.write('Cannot find file "%s"\n' % (f.make_path(args.directory, args.extension),))
     output.write('%d files (out of %d) were not found at "%s"\n' % \
         (len(bad), len(r), args.directory))
+  else:
+    output.write('all OK\n')
 
   return 0
 

@@ -25,7 +25,7 @@ from bob.db.base.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
 
-import bob.db.verification.utils
+import bob.db.base
 
 Base = declarative_base()
 
@@ -63,7 +63,7 @@ class Client(Base):
     return "Client(%s, %s)" % (self.id, self.gender)
 
 
-class File(Base, bob.db.verification.utils.File):
+class File(Base, bob.db.base.File):
   """Generic file container"""
 
   __tablename__ = 'file'
@@ -73,14 +73,41 @@ class File(Base, bob.db.verification.utils.File):
   # Key identifier of the client associated with this file
   client_id = Column(String(20), ForeignKey('client.id')) # for SQL
   # Unique path to this file inside the database
-  path = Column(String(100), unique=True)
+  path = Column(String(100))
+  side_choices = ('a','b')
+  side = Column(Enum(*side_choices))
 
   # for Python
   client = relationship("Client", backref=backref("files", order_by=id))
 
-  def __init__(self, client_id, path):
+  def __init__(self, client_id, path, side):
     # call base class constructor
-    bob.db.verification.utils.File.__init__(self, client_id = client_id, path = path)
+    bob.db.base.File.__init__(self, path = path)
+    self.client_id = client_id
+    self.side = side
+
+  def make_path(self, directory=None, extension=None, add_side=True):
+    """Wraps the current path so that a complete path is formed
+
+    Keyword Parameters:
+
+    directory
+      An optional directory name that will be prefixed to the returned result.
+
+    extension
+      An optional extension that will be suffixed to the returned filename. The
+      extension normally includes the leading ``.`` character as in ``.jpg`` or
+      ``.hdf5``.
+
+    Returns a string containing the newly generated file path.
+    """
+    # assure that directory and extension are actually strings
+    # create the path
+    if add_side:
+      return str(os.path.join(directory or '', self.path + '-' + self.side + (extension or '')))
+    else:
+      return str(os.path.join(directory or '', self.path + (extension or '')))
+
 
 class Protocol(Base):
   """NIST SRE 2012 protocols"""

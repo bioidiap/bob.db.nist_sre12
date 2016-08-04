@@ -36,11 +36,11 @@ def add_files(session, all_files, verbose):
     session.refresh(client)
     return client
 
-  def add_file(session, c_id, path, verbose):
+  def add_file(session, c_id, path, side, verbose):
     """Parse a single filename and add it to the list.
        Also add a client entry if not already in the database."""
-    if verbose>1: print("  Adding file '%s'..." %(path,))
-    file_ = File(c_id, path)
+    if verbose>1: print("  Adding file '%s %s'..." %(path,side))
+    file_ = File(c_id, path, side)
     session.add(file_)
     session.flush()
     session.refresh(file_)
@@ -51,7 +51,7 @@ def add_files(session, all_files, verbose):
   file_dict = {}
   f = open(all_files)
   for line in f:
-    path, c_id, gender = line.split()
+    path, side, c_id, gender = line.split()
     # Append gender information to client id
     # since there are lots of wrong gender information
     if gender == 'male': c_id = c_id + '_M'
@@ -60,17 +60,18 @@ def add_files(session, all_files, verbose):
     if not c_id in client_dict:
       client_dict[c_id] = add_client(session, c_id, gender, verbose)
     if not path in file_dict:
-      file_dict[path] = add_file(session, c_id, path, verbose)
+      file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
   return (file_dict, client_dict)
 
 def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   """Adds protocols"""
 
-  tclient_dict = {}
+#  tclient_dict = {}
   protocols = os.listdir(protocol_dir)
 
   # 2. ADDITIONS TO THE SQL DATABASE
-  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enroll', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
+#  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enroll', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
+  protocolPurpose_list = [('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst')]
   for proto in protocols:
     p = Protocol(proto)
     # Add protocol
@@ -89,30 +90,35 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       session.refresh(pu)
 
       pu_client_dict = {}
-      pu_tclient_dict = {}
+#      pu_tclient_dict = {}
       # Add files attached with this protocol purpose
       f = open(os.path.join(protocol_dir, proto, purpose[2]))
       for line in f:
-        path = line.split()[0]
-        if (path in file_dict):
-          if verbose>1: print("    Adding protocol file '%s'..." % (path, ))
-          pu.files.append(file_dict[path])
-          c_id = file_dict[path].client_id
-          # If T-Norm client does not exist, add it to the database
-          if not c_id in pu_tclient_dict and purpose[1] == 'tnorm':
-            if verbose>1: print("    Adding protocol T-client '%s'..." % (c_id, ))
-            if not c_id in tclient_dict:
-              tclient = TClient(c_id, proto)
-              session.add(tclient)
-              session.flush()
-              session.refresh(tclient)
-              tclient_dict[c_id] = tclient
-            pu.tclients.append(tclient_dict[c_id])
-            pu_tclient_dict[c_id] = tclient_dict[c_id]
-          # If T-Norm files is not associated to its client, do it
-          if purpose[1] == 'tnorm':
-            if not path in [k.path for k in tclient_dict[c_id].files]:
-              tclient_dict[c_id].files.append(file_dict[path])
+        l = line.split()
+        path = l[0]
+        side = l[1]
+        c_id = l[2]
+#        path = line.split()[0]
+        if (path,side) in file_dict:
+          if verbose>1: print("    Adding protocol file '%s %s'..." % (path,side ))
+          pu.files.append(file_dict[(path,side)])
+          c_id = file_dict[(path,side)].client_id
+#          # If T-Norm client does not exist, add it to the database
+#          if not c_id in pu_tclient_dict and purpose[1] == 'tnorm':
+#            if verbose>1: print("    Adding protocol T-client '%s'..." % (c_id, ))
+#            if not c_id in tclient_dict:
+#              tclient = TClient(c_id, proto)
+#              session.add(tclient)
+#              session.flush()
+#              session.refresh(tclient)
+#              tclient_dict[c_id] = tclient
+#            pu.tclients.append(tclient_dict[c_id])
+#            pu_tclient_dict[c_id] = tclient_dict[c_id]
+#          # If T-Norm files is not associated to its client, do it
+#          if purpose[1] == 'tnorm':
+#            if not path in [k.path for k in tclient_dict[c_id].files]:
+#              tclient_dict[c_id].files.append(file_dict[path])
+
           # If Client does not exist, add it to the database
           if not c_id in pu_client_dict:
             if verbose>1: print("    Adding protocol client '%s'..." % (c_id, ))
@@ -122,7 +128,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
             else:
               raise RuntimeError("Client '%s' is in the protocol list but not in the database" % c_id)
         else:
-          raise RuntimeError("File '%s' is in the protocol list but not in the database" % path)
+          raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
 
 
 def create_tables(args):
@@ -167,8 +173,10 @@ def add_command(subparsers):
   parser.add_argument('-R', '--recreate', action='store_true', help="If set, I'll first erase the current database")
   parser.add_argument('-v', '--verbose', action='count', help="Do SQL operations in a verbose way")
   from pkg_resources import resource_filename
-  prism_basedir = 'prism'
-  prism_path = resource_filename(__name__, prism_basedir)
-  parser.add_argument('-D', '--datadir', metavar='DIR', default=prism_path, help="Change the path to the containing information about the NIST SRE 2012 database.")
+#  prism_basedir = 'prism'
+#  prism_path = resource_filename(__name__, prism_basedir)
+  sre12_basedir = 'sre12'
+  sre12_path = resource_filename(__name__, sre12_basedir)
+  parser.add_argument('-D', '--datadir', metavar='DIR', default=sre12_path, help="Change the path to the containing information about the NIST SRE 2012 database.")
 
   parser.set_defaults(func=create) #action
