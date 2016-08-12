@@ -57,9 +57,9 @@ def add_files(session, all_files, verbose):
     if gender == 'male': c_id = c_id + '_M'
     elif gender == 'female': c_id = c_id + '_F'
     else: raise RuntimeError("Gender unknown while parsing line '%s'." % line.strip())
-    if not c_id in client_dict:
+    if (not c_id in client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
       client_dict[c_id] = add_client(session, c_id, gender, verbose)
-    if not path in file_dict:
+    if not (path,side) in file_dict:
       file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
   return (file_dict, client_dict)
 
@@ -68,10 +68,10 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
 
 #  tclient_dict = {}
   protocols = os.listdir(protocol_dir)
-
   # 2. ADDITIONS TO THE SQL DATABASE
 #  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enroll', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
-  protocolPurpose_list = [('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst')]
+  protocolPurpose_list = [ ('eval', 'enroll', 'eval/core/for_models.lst'), ('eval', 'probe', 'eval/core/for_probes.lst') ]
+
   for proto in protocols:
     p = Protocol(proto)
     # Add protocol
@@ -92,6 +92,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       pu_client_dict = {}
 #      pu_tclient_dict = {}
       # Add files attached with this protocol purpose
+      print os.path.join(protocol_dir, proto, purpose[2])
       f = open(os.path.join(protocol_dir, proto, purpose[2]))
       for line in f:
         l = line.split()
@@ -120,7 +121,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
 #              tclient_dict[c_id].files.append(file_dict[path])
 
           # If Client does not exist, add it to the database
-          if not c_id in pu_client_dict:
+          if (not c_id in pu_client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
             if verbose>1: print("    Adding protocol client '%s'..." % (c_id, ))
             if c_id in client_dict:
               pu.clients.append(client_dict[c_id])

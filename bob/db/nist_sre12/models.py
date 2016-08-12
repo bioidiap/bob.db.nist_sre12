@@ -40,13 +40,13 @@ protocolPurpose_client_association = Table('protocolPurpose_client_association',
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('client_id',  String(20), ForeignKey('client.id')))
 
-protocolPurpose_tclient_association = Table('protocolPurpose_tclient_association', Base.metadata,
-  Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
-  Column('tclient_id',  String(20), ForeignKey('tclient.id')))
+#protocolPurpose_tclient_association = Table('protocolPurpose_tclient_association', Base.metadata,
+#  Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
+#  Column('tclient_id',  String(20), ForeignKey('tclient.id')))
 
-tclient_file_association = Table('tclient_file_association', Base.metadata,
-  Column('tclient_id',  String(20), ForeignKey('tclient.id')),
-  Column('id', Integer, ForeignKey('file.id')))
+#tclient_file_association = Table('tclient_file_association', Base.metadata,
+#  Column('tclient_id',  String(20), ForeignKey('tclient.id')),
+#  Column('id', Integer, ForeignKey('file.id')))
 
 class Client(Base):
   """Database clients, marked by an integer identifier and the group they belong to"""
@@ -183,10 +183,10 @@ class ProtocolPurpose(Base):
   # Id of the protocol associated with this protocol purpose object
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
-  group_choices = ('world', 'dev', 'eval', 'optional_world_1', 'optional_world_2')
+  group_choices = ('eval',)
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
-  purpose_choices = ('train', 'enroll', 'probe', 'tnorm', 'znorm')
+  purpose_choices = ('enroll', 'probe')
   purpose = Column(Enum(*purpose_choices))
 
   # For Python: A direct link to the Protocol object that this ProtocolPurpose belongs to
@@ -196,7 +196,7 @@ class ProtocolPurpose(Base):
   # For Python: A direct link to the Client objects associated with this ProtcolPurpose
   clients = relationship("Client", secondary=protocolPurpose_client_association, backref=backref("protocolPurposes", order_by=id))
   # For Python: A direct link to the T-Norm Client objects associated with this ProtcolPurpose
-  tclients = relationship("TClient", secondary=protocolPurpose_tclient_association, backref=backref("protocolPurposes", order_by=id))
+#  tclients = relationship("TClient", secondary=protocolPurpose_tclient_association, backref=backref("protocolPurposes", order_by=id))
 
   def __init__(self, protocol_id, sgroup, purpose):
     self.protocol_id = protocol_id
@@ -206,23 +206,23 @@ class ProtocolPurpose(Base):
   def __repr__(self):
     return "ProtocolPurpose('%s', '%s', '%s')" % (self.protocol.name, self.sgroup, self.purpose)
 
-class TClient(Base):
-  """Database T-clients, marked by an integer identifier and the group they belong to"""
-
-  __tablename__ = 'tclient'
-
-  # Key identifier for the client
-  id = Column(String(20), primary_key=True) # speaker_pin
-  gender_choices = ('male', 'female')
-  gender = Column(Enum(*gender_choices))
-
-  # For Python: A direct link to the File objects associated with this T-Norm client
-  files = relationship("File", secondary=tclient_file_association, backref=backref("tclients", order_by=id))
-
-  def __init__(self, id, gender):
-    self.id = id
-    self.gender = gender
-
-  def __repr__(self):
-    return "TClient(%s, %s)" % (self.id, self.gender)
+#class TClient(Base):
+#  """Database T-clients, marked by an integer identifier and the group they belong to"""
+#
+#  __tablename__ = 'tclient'
+#
+#  # Key identifier for the client
+#  id = Column(String(20), primary_key=True) # speaker_pin
+#  gender_choices = ('male', 'female')
+#  gender = Column(Enum(*gender_choices))
+#
+#  # For Python: A direct link to the File objects associated with this T-Norm client
+#  files = relationship("File", secondary=tclient_file_association, backref=backref("tclients", order_by=id))
+#
+#  def __init__(self, id, gender):
+#    self.id = id
+#    self.gender = gender
+#
+#  def __repr__(self):
+#    return "TClient(%s, %s)" % (self.id, self.gender)
 
