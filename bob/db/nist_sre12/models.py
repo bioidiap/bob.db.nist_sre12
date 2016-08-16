@@ -183,7 +183,7 @@ class ProtocolPurpose(Base):
   # Id of the protocol associated with this protocol purpose object
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
-  group_choices = ('eval',)
+  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
   purpose_choices = ('enroll', 'probe')

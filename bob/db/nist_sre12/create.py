@@ -70,7 +70,14 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   protocols = os.listdir(protocol_dir)
   # 2. ADDITIONS TO THE SQL DATABASE
 #  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enroll', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
-  protocolPurpose_list = [ ('eval', 'enroll', 'eval/core/for_models.lst'), ('eval', 'probe', 'eval/core/for_probes.lst') ]
+  protocolPurpose_list = [ 
+    ('eval-core-all', 'enroll', 'eval-core-all/for_models.lst'), ('eval-core-all', 'probe', 'eval-core-all/for_probes.lst'),
+    ('eval-core-c1', 'enroll', 'eval-core-c1/for_models.lst'), ('eval-core-c1', 'probe', 'eval-core-c1/for_probes.lst'),
+    ('eval-core-c2', 'enroll', 'eval-core-c2/for_models.lst'), ('eval-core-c2', 'probe', 'eval-core-c2/for_probes.lst'),
+    ('eval-core-c3', 'enroll', 'eval-core-c3/for_models.lst'), ('eval-core-c3', 'probe', 'eval-core-c3/for_probes.lst'),
+    ('eval-core-c4', 'enroll', 'eval-core-c4/for_models.lst'), ('eval-core-c4', 'probe', 'eval-core-c4/for_probes.lst'),
+    ('eval-core-c5', 'enroll', 'eval-core-c5/for_models.lst'), ('eval-core-c5', 'probe', 'eval-core-c5/for_probes.lst'),
+]
 
   for proto in protocols:
     p = Protocol(proto)
