@@ -159,6 +159,7 @@ def readTrialKey(filename):
       d['spkid'] = spkid
       d['testfile'] = correctPathFromFile (s[1])
       d['testside'] = s[2].lower()
+      d['testid'] = os.path.splitext(os.path.basename(d['testfile']))[0]
 
       if s[3].lower()=='target' or s[3].lower()=='known_target':
         d['target'] = 'target'
@@ -250,6 +251,14 @@ with open ('all_files.lst','w') as fpall:
             fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
             included[(path,side)] = True
 
+      with open (dirname + '/key.lst','w') as fp:
+        keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]
+        for k in keycond:
+          spkid = k[0]
+          testid = k[1]
+          target = k[2]
+          fp.write(spkid + ' ' + testid + ' ' + target + '\n')
+ 
   for protocol,gender in [('all','all')]:
     for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
       dirname = protocolDir + '/' + protocol + '/' + group
@@ -282,6 +291,14 @@ with open ('all_files.lst','w') as fpall:
           if (path,side) not in included:
             fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
             included[(path,side)] = True
+
+      with open (dirname + '/key.lst','w') as fp:
+        keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if k[cond]]
+        for k in keycond:
+          spkid = k[0]
+          testid = k[1]
+          target = k[2]
+          fp.write(spkid + ' ' + testid + ' ' + target + '\n')
 
 #      models = [ (rec['modelfile'], rec['modelside']) for rec in keys if rec[cond]==True and rec['modelgender']==gender ]
 #      with open (dirname + '/for_models.lst','w') as fp:
