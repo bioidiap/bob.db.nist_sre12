@@ -66,10 +66,7 @@ def add_files(session, all_files, verbose):
 def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   """Adds protocols"""
 
-#  tclient_dict = {}
   protocols = os.listdir(protocol_dir)
-  # 2. ADDITIONS TO THE SQL DATABASE
-#  protocolPurpose_list = [('world', 'train', 'norm/train_world.lst'), ('optional_world_1', 'train', 'norm/train_optional_world_1.lst'), ('optional_world_2', 'train', 'norm/train_optional_world_2.lst'), ('dev', 'enroll', 'dev/for_models.lst'), ('dev', 'probe', 'dev/for_probes.lst'), ('dev', 'tnorm', 'dev/for_tnorm.lst'), ('dev', 'znorm', 'dev/for_znorm.lst'), ('eval', 'enroll', 'eval/for_models.lst'), ('eval', 'probe', 'eval/for_probes.lst'), ('eval', 'tnorm', 'dev/for_tnorm.lst'), ('eval', 'znorm', 'dev/for_znorm.lst')]
   protocolPurpose_list = [ 
     ('eval-core-all', 'enroll', 'eval-core-all/for_models.lst'), ('eval-core-all', 'probe', 'eval-core-all/for_probes.lst'),
     ('eval-core-c1', 'enroll', 'eval-core-c1/for_models.lst'), ('eval-core-c1', 'probe', 'eval-core-c1/for_probes.lst'),
@@ -78,6 +75,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
     ('eval-core-c4', 'enroll', 'eval-core-c4/for_models.lst'), ('eval-core-c4', 'probe', 'eval-core-c4/for_probes.lst'),
     ('eval-core-c5', 'enroll', 'eval-core-c5/for_models.lst'), ('eval-core-c5', 'probe', 'eval-core-c5/for_probes.lst'),
 ]
+
 
   for proto in protocols:
     p = Protocol(proto)
@@ -88,8 +86,9 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
     session.refresh(p)
 
     # Add protocol purposes
-    for key in range(len(protocolPurpose_list)):
-      purpose = protocolPurpose_list[key]
+#    for key in range(len(protocolPurpose_list)):
+    for purpose in protocolPurpose_list:
+#      purpose = protocolPurpose_list[key]
       pu = ProtocolPurpose(p.id, purpose[0], purpose[1])
       if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
       session.add(pu)
@@ -97,35 +96,18 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       session.refresh(pu)
 
       pu_client_dict = {}
-#      pu_tclient_dict = {}
       # Add files attached with this protocol purpose
-      print os.path.join(protocol_dir, proto, purpose[2])
       f = open(os.path.join(protocol_dir, proto, purpose[2]))
       for line in f:
         l = line.split()
         path = l[0]
         side = l[1]
         c_id = l[2]
-#        path = line.split()[0]
         if (path,side) in file_dict:
-          if verbose>1: print("    Adding protocol file '%s %s'..." % (path,side ))
+          if verbose>1: print("    Adding protocol file '%s %s %s'..." % (purpose[1], path,side ))
+          # add file into files field of purpose record
           pu.files.append(file_dict[(path,side)])
           c_id = file_dict[(path,side)].client_id
-#          # If T-Norm client does not exist, add it to the database
-#          if not c_id in pu_tclient_dict and purpose[1] == 'tnorm':
-#            if verbose>1: print("    Adding protocol T-client '%s'..." % (c_id, ))
-#            if not c_id in tclient_dict:
-#              tclient = TClient(c_id, proto)
-#              session.add(tclient)
-#              session.flush()
-#              session.refresh(tclient)
-#              tclient_dict[c_id] = tclient
-#            pu.tclients.append(tclient_dict[c_id])
-#            pu_tclient_dict[c_id] = tclient_dict[c_id]
-#          # If T-Norm files is not associated to its client, do it
-#          if purpose[1] == 'tnorm':
-#            if not path in [k.path for k in tclient_dict[c_id].files]:
-#              tclient_dict[c_id].files.append(file_dict[path])
 
           # If Client does not exist, add it to the database
           if (not c_id in pu_client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':

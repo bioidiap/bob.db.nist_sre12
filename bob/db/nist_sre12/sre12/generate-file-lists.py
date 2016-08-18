@@ -215,7 +215,7 @@ key = readTrialKey(trialkey)
 protocolDir='protocols'
 
 with open ('all_files.lst','w') as fpall:
-  included = {}
+  included_all = {}
 
   for protocol,gender in [('male','m'), ('female','f')]:
     for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
@@ -228,28 +228,36 @@ with open ('all_files.lst','w') as fpall:
 
       with open (dirname + '/for_models.lst','w') as fp:
         spkids = list(set([ k['spkid'] for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]))
+        included_models = {}
         for spkid in spkids:
           modelfiles = spkdata[spkid]['files']
           for x in modelfiles:
             path = x[0]
             side = x[1]
             gend = 'male' if spkdata[spkid]['gender'] == 'm' else 'female'
-            fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-            if (path,side) not in included:
+            if (path,side) not in included_models:
+              fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+              included_models[(path,side)] = True
+
+            if (path,side) not in included_all:
               fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-              included[(path,side)] = True
+              included_all[(path,side)] = True
 
       with open (dirname + '/for_probes.lst','w') as fp:
         tests = list(set([ (k['testfile'], k['testside'], k['spkid']) for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]))
+        included_files ={}
         for test in tests:
           path = test[0]
           side = test[1]
           spkid = 'M_ID_X'
           gend = 'male' if spkdata[test[2]]['gender'] == 'm' else 'female'
-          fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-          if (path,side) not in included:
+          if (path,side) not in included_files:
+            fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+            included_files[(path,side)] = True
+
+          if (path,side) not in included_all:
             fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-            included[(path,side)] = True
+            included_all[(path,side)] = True
 
       with open (dirname + '/key.lst','w') as fp:
         keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]
@@ -270,27 +278,38 @@ with open ('all_files.lst','w') as fpall:
  
       with open (dirname + '/for_models.lst','w') as fp:
         spkids = list(set([ k['spkid'] for k in key if k[cond] ]))
+        included_models = {}
         for spkid in spkids:
           modelfiles = spkdata[spkid]['files']
           gend = 'male' if spkdata[spkid]['gender'] == 'm' else 'female'
           for x in modelfiles:
             path = x[0]
             side = x[1]
-            fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-            if (path,side) not in included:
+
+            if (path,side) not in included_models:
+              fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+              included_models[(path,side)] = True
+
+            if (path,side) not in included_all:
               fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-              included[(path,side)] = True
+              included_all[(path,side)] = True
 
       with open (dirname + '/for_probes.lst','w') as fp:
         tests = list(set([ (k['testfile'], k['testside'], k['spkid']) for k in key if k[cond] ]))
+        included_files = {}
         for test in tests:
           path = test[0]
           side = test[1]
           gend = 'male' if spkdata[test[2]]['gender'] == 'm' else 'female'
-          fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-          if (path,side) not in included:
+
+          if (path,side) not in included_files:
+            fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+            included_files[(path,side)] = True
+
+          if (path,side) not in included_all:
             fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-            included[(path,side)] = True
+            included_all[(path,side)] = True
+
 
       with open (dirname + '/key.lst','w') as fp:
         keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if k[cond]]
