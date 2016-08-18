@@ -40,14 +40,6 @@ protocolPurpose_client_association = Table('protocolPurpose_client_association',
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('client_id',  String(20), ForeignKey('client.id')))
 
-#protocolPurpose_tclient_association = Table('protocolPurpose_tclient_association', Base.metadata,
-#  Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
-#  Column('tclient_id',  String(20), ForeignKey('tclient.id')))
-
-#tclient_file_association = Table('tclient_file_association', Base.metadata,
-#  Column('tclient_id',  String(20), ForeignKey('tclient.id')),
-#  Column('id', Integer, ForeignKey('file.id')))
-
 class Client(Base):
   """Database clients, marked by an integer identifier and the group they belong to"""
 
@@ -75,6 +67,7 @@ class File(Base, bob.db.base.File):
   id = Column(Integer, primary_key=True)
   # Key identifier of the client associated with this file
   client_id = Column(String(20), ForeignKey('client.id')) # for SQL
+  probe_id = Column(String(20))
   # Unique path to this file inside the database
   path = Column(String(100))
   side_choices = ('a','b')
@@ -87,6 +80,7 @@ class File(Base, bob.db.base.File):
     # call base class constructor
     bob.db.base.File.__init__(self, path = path)
     self.client_id = client_id
+    self.probe_id = os.path.splitext(os.path.basename(path)) + '_' + side
     self.side = side
 
   def make_path(self, directory=None, extension=None, add_side=True):
@@ -197,8 +191,6 @@ class ProtocolPurpose(Base):
   files = relationship("File", secondary=protocolPurpose_file_association, backref=backref("protocolPurposes", order_by=id))
   # For Python: A direct link to the Client objects associated with this ProtcolPurpose
   clients = relationship("Client", secondary=protocolPurpose_client_association, backref=backref("protocolPurposes", order_by=id))
-  # For Python: A direct link to the T-Norm Client objects associated with this ProtcolPurpose
-#  tclients = relationship("TClient", secondary=protocolPurpose_tclient_association, backref=backref("protocolPurposes", order_by=id))
 
   def __init__(self, protocol_id, sgroup, purpose):
     self.protocol_id = protocol_id
@@ -207,24 +199,4 @@ class ProtocolPurpose(Base):
 
   def __repr__(self):
     return "ProtocolPurpose('%s', '%s', '%s')" % (self.protocol.name, self.sgroup, self.purpose)
-
-#class TClient(Base):
-#  """Database T-clients, marked by an integer identifier and the group they belong to"""
-#
-#  __tablename__ = 'tclient'
-#
-#  # Key identifier for the client
-#  id = Column(String(20), primary_key=True) # speaker_pin
-#  gender_choices = ('male', 'female')
-#  gender = Column(Enum(*gender_choices))
-#
-#  # For Python: A direct link to the File objects associated with this T-Norm client
-#  files = relationship("File", secondary=tclient_file_association, backref=backref("tclients", order_by=id))
-#
-#  def __init__(self, id, gender):
-#    self.id = id
-#    self.gender = gender
-#
-#  def __repr__(self):
-#    return "TClient(%s, %s)" % (self.id, self.gender)
 
