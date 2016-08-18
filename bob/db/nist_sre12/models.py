@@ -80,7 +80,7 @@ class File(Base, bob.db.base.File):
     # call base class constructor
     bob.db.base.File.__init__(self, path = path)
     self.client_id = client_id
-    self.probe_id = os.path.splitext(os.path.basename(path)) + '_' + side
+    self.probe_id = os.path.splitext(os.path.basename(path))[0] + '_' + side
     self.side = side
 
   def make_path(self, directory=None, extension=None, add_side=True):
