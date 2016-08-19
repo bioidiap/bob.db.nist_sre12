@@ -243,4 +243,36 @@ class Database(bob.db.base.SQLiteDatabase):
 
     return ProtocolPurpose.purpose_choices
 
+  def eval_key(self, protocol=None, groups=None):
+    """Returns a list of key tuples with (target speaker, test segment and target value). This 
+    method does not use the SQL interface but reads the key file directly from disk (as this file 
+    can be huge ~2-80 million records)
 
+    Keyword Parameters:
+
+    protocol
+      The protocol to consider ('female', 'male')
+
+    groups
+      The groups to which the subjects attached to the models belong ('dev', 'eval', 'world')
+
+    """
+    from pkg_resources import resource_filename
+
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
+    groups = self.check_parameters_for_validity(groups, "group", self.groups())
+
+    key = []
+    for p in protocol:
+      for g in groups:
+        protocol_path = resource_filename(__name__, 'sre12/protocols')
+        fn = os.path.join(protocol_path,p,g,'key.lst')
+        with open(fn) as fp:
+          for l in fp:
+            l = l.strip()
+            s = l.split()
+            tgt = s[0]
+            tst = s[1]
+            target = s[2]
+            key.append((tgt, tst, target))
+    return key

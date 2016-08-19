@@ -60,6 +60,14 @@ def test_query():
   assert(len(db.objects(protocol='all', groups='eval-core-c5', purposes='enroll')) == 54919)
   assert(len(db.objects(protocol='all', groups='eval-core-c5', purposes='probe')) == 6182)
 
+  assert(len(db.eval_key(protocol='all', groups='eval-core-all')) == 1880434)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c1')) == 111534)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c2')) == 626036)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c3')) == 72940)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c4')) == 486090)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c5')) == 248631)
+
+
   # male
   assert(len(db.objects(protocol='male', groups='eval-core-all', purposes='enroll')) == 23351)
   assert(len(db.objects(protocol='male', groups='eval-core-all', purposes='probe')) == 29728)
@@ -73,6 +81,13 @@ def test_query():
   assert(len(db.objects(protocol='male', groups='eval-core-c4', purposes='probe')) == 4386)
   assert(len(db.objects(protocol='male', groups='eval-core-c5', purposes='enroll')) == 23311)
   assert(len(db.objects(protocol='male', groups='eval-core-c5', purposes='probe')) == 2421)
+
+  assert(len(db.eval_key(protocol='male', groups='eval-core-all')) == 564430)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c1')) == 23478)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c2')) == 185511)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c3')) == 17576)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c4')) == 143727)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c5')) == 73008)
 
   # female
   assert(len(db.objects(protocol='female', groups='eval-core-all', purposes='enroll')) == 33405)
@@ -88,6 +103,12 @@ def test_query():
   assert(len(db.objects(protocol='female', groups='eval-core-c5', purposes='enroll')) == 33345)
   assert(len(db.objects(protocol='female', groups='eval-core-c5', purposes='probe')) == 3761)
 
+  assert(len(db.eval_key(protocol='female', groups='eval-core-all')) == 1316004)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c1')) == 88056)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c2')) == 440525)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c3')) == 55364)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c4')) == 342363)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c5')) == 175623)
 
 @db_available
 def test_driver_api():
