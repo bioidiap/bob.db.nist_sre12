@@ -166,32 +166,32 @@ def readTrialKey(filename):
       else:
         d['target'] = 'nontarget'
 
-      d['core'] = True
+      d['eval-core-all'] = True
 
       if s[5].lower()=='y':
-        d['core-c1'] = True
+        d['eval-core-c1'] = True
       else:
-        d['core-c1'] = False
+        d['eval-core-c1'] = False
 
       if s[6].lower()=='y':
-        d['core-c2'] = True
+        d['eval-core-c2'] = True
       else:
-        d['core-c2'] = False
+        d['eval-core-c2'] = False
 
       if s[7].lower()=='y':
-        d['core-c3'] = True
+        d['eval-core-c3'] = True
       else:
-        d['core-c3'] = False
+        d['eval-core-c3'] = False
 
       if s[8].lower()=='y':
-        d['core-c4'] = True
+        d['eval-core-c4'] = True
       else:
-        d['core-c4'] = False
+        d['eval-core-c4'] = False
 
       if s[9].lower()=='y':
-        d['core-c5'] = True
+        d['eval-core-c5'] = True
       else:
-        d['core-c5'] = False
+        d['eval-core-c5'] = False
 
       keys.append(d)
 
@@ -218,11 +218,10 @@ with open ('all_files.lst','w') as fpall:
   included_all = {}
 
   for protocol,gender in [('male','m'), ('female','f')]:
-
-
     for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
       dirname = protocolDir + '/' + protocol + '/' + group
-      cond = '-'.join(group.split('-')[1:])
+#      cond = '-'.join(group.split('-')[1:])
+      cond = group
       try:
         os.makedirs (dirname)
       except:
@@ -271,9 +270,10 @@ with open ('all_files.lst','w') as fpall:
  
 
   for protocol,gender in [('all','all')]:
-    for group in ['eval']:
-      for cond in ['core','core-c1','core-c2','core-c3','core-c4','core-c5']:
-        dirname = protocolDir + '/' + protocol + '/' + group + '/' + cond
+      for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
+        dirname = protocolDir + '/' + protocol + '/' + group
+#        cond = '-'.join(group.split('-')[1:])
+        cond = group
         try:
           os.makedirs (dirname)
         except:
@@ -321,29 +321,3 @@ with open ('all_files.lst','w') as fpall:
           target = k[2]
           fp.write(spkid + ' ' + testid + ' ' + target + '\n')
 
-#      models = [ (rec['modelfile'], rec['modelside']) for rec in keys if rec[cond]==True and rec['modelgender']==gender ]
-#      with open (dirname + '/for_models.lst','w') as fp:
-#        for x in list(set(models)):
-#          fp.write(' '.join(x) + '\n')
-      
-#      probes = [ (rec['testfile'], rec['testside']) for rec in keys if rec[cond]==True and rec['modelgender']==gender ]
-#      with open (dirname + '/for_probes.lst','w') as fp:
-#        for x in list(set(probes)):
-#          fp.write(' '.join(x) + '\n')
- 
-#      key = [ (rec['modelfile'], rec['modelside'], rec['testfile'], rec['testside'], rec['target']) for rec in keys if rec[cond]==True and rec['modelgender']==gender ]
-#      with open (dirname + '/key.txt','w') as fp:
-#        for x in list(set(key)):
-#          fp.write(' '.join(x) + '\n')
-        
-
-
-#     for gfile in ['for_models.lst', 'for_probes.lst']:
-#       for line in open(os.path.join(CUR_DIR, protocol, group, gfile)):
-#         s = line.split()
-#         path = str(s[0])
-#         cid = str(s[1])
-#         gender = protocol
-#         if not path in gender_file:
-#           print('%s %s %s' % (path, cid, gender))
-#           gender_file[path] = True
