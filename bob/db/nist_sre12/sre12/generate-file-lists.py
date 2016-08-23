@@ -166,7 +166,6 @@ def readTrialKey(filename):
       else:
         d['target'] = 'nontarget'
 
-<<<<<<< HEAD
       d['eval-core-all'] = True
 
       if s[5].lower()=='y':
@@ -193,34 +192,6 @@ def readTrialKey(filename):
         d['eval-core-c5'] = True
       else:
         d['eval-core-c5'] = False
-=======
-      d['core-all'] = True
-
-      if s[5].lower()=='y':
-        d['core-c1'] = True
-      else:
-        d['core-c1'] = False
-
-      if s[6].lower()=='y':
-        d['core-c2'] = True
-      else:
-        d['core-c2'] = False
-
-      if s[7].lower()=='y':
-        d['core-c3'] = True
-      else:
-        d['core-c3'] = False
-
-      if s[8].lower()=='y':
-        d['core-c4'] = True
-      else:
-        d['core-c4'] = False
-
-      if s[9].lower()=='y':
-        d['core-c5'] = True
-      else:
-        d['core-c5'] = False
->>>>>>> bd3e46b2660370d8dadcb2ec01dce28b6fec4979
 
       keys.append(d)
 
