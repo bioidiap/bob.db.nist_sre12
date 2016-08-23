@@ -166,6 +166,7 @@ def readTrialKey(filename):
       else:
         d['target'] = 'nontarget'
 
+<<<<<<< HEAD
       d['eval-core-all'] = True
 
       if s[5].lower()=='y':
@@ -192,6 +193,34 @@ def readTrialKey(filename):
         d['eval-core-c5'] = True
       else:
         d['eval-core-c5'] = False
+=======
+      d['core-all'] = True
+
+      if s[5].lower()=='y':
+        d['core-c1'] = True
+      else:
+        d['core-c1'] = False
+
+      if s[6].lower()=='y':
+        d['core-c2'] = True
+      else:
+        d['core-c2'] = False
+
+      if s[7].lower()=='y':
+        d['core-c3'] = True
+      else:
+        d['core-c3'] = False
+
+      if s[8].lower()=='y':
+        d['core-c4'] = True
+      else:
+        d['core-c4'] = False
+
+      if s[9].lower()=='y':
+        d['core-c5'] = True
+      else:
+        d['core-c5'] = False
+>>>>>>> bd3e46b2660370d8dadcb2ec01dce28b6fec4979
 
       keys.append(d)
 
@@ -220,8 +249,8 @@ with open ('all_files.lst','w') as fpall:
   for protocol,gender in [('male','m'), ('female','f')]:
     for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
       dirname = protocolDir + '/' + protocol + '/' + group
-#      cond = '-'.join(group.split('-')[1:])
       cond = group
+#      cond = '-'.join(group.split('-')[1:])
       try:
         os.makedirs (dirname)
       except:
@@ -268,7 +297,6 @@ with open ('all_files.lst','w') as fpall:
           target = k[2]
           fp.write(spkid + ' ' + testid + ' ' + target + '\n')
  
-
   for protocol,gender in [('all','all')]:
       for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
         dirname = protocolDir + '/' + protocol + '/' + group
@@ -320,4 +348,3 @@ with open ('all_files.lst','w') as fpall:
           testid = k[1]
           target = k[2]
           fp.write(spkid + ' ' + testid + ' ' + target + '\n')
-
