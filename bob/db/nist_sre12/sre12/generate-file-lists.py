@@ -199,22 +199,25 @@ def readTrialKey(filename):
 
 
 
-print 'reading spkid-to-files mapping'
+print ('generating file lists for all protocols and groups')
+#print ('reading spkid-to-files mapping')
 spkid2files = readSpeakerFiles (speakerfiles)
 newspkid2files = readSpeakerFiles (newspeakerfiles)
 spkid2files = dict (spkid2files.items() + newspkid2files.items()) 
 
-
-print 'reading speaker metadata'
+#print ('reading speaker metadata')
 spkdata = readSpeakerData (speakerdata, spkid2files)
 newspkdata = readSpeakerData (newspeakerdata, spkid2files)
 spkdata = dict ( spkdata.items() + newspkdata.items() )
-print 'reading core condition trial key'
+
+#print ('reading core condition trial key')
 key = readTrialKey(trialkey)
 
-protocolDir='protocols'
+sre12dir = os.path.dirname(os.path.realpath(sys.argv[0]))
 
-with open ('all_files.lst','w') as fpall:
+protocolDir = sre12dir + '/' + 'protocols'
+
+with open (sre12dir + '/' + 'all_files.lst','w') as fpall:
   included_all = {}
 
   for protocol,gender in [('male','m'), ('female','f')]:
