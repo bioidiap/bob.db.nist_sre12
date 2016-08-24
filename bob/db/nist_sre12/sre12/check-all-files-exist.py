@@ -2,14 +2,14 @@
 
 import os.path
 
-file = 'all_files.lst'
+filelist = 'all_files.lst'
 
 
 step = 2000
 ok = 0
 nok = 0
 fileno = 0
-with open(file) as fp:
+with open(filelist) as fp:
   for fn in fp.readlines():
     fn = fn.strip()
     path = fn.split()[0]
