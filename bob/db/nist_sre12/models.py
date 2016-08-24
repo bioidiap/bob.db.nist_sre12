@@ -128,8 +128,7 @@ class File(Base, bob.db.base.File):
     # get the path
     abspath = self.make_path(directory or '', extension or '', add_side=False)
     with tempfile.NamedTemporaryFile(suffix='.wav') as ftmp:
-      sph2pipeDir = '/idiap/home/mferras/bin'
-      cmd = [sph2pipeDir + '/sph2pipe']
+      cmd = ['sph2pipe']
       if self.side == 'a':
         cmd += [
           '-c 1',
