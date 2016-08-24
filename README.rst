@@ -35,7 +35,7 @@ Please make sure that you have read the `Dependencies <https://github.com/idiap/
 
 Documentation
 -------------
-For further documentation on this package, please read the `Stable Version <http://pythonhosted.org/bob.db.nist_sre12/index.html>`_ or the `Latest Version <https://www.idiap.ch/software/bob/docs/latest/bioidiap/bob.db.nist_sre12/master/index.html>`_ of the documentation.
+For further documentation on this package, please read the `Stable Version <http://pythonhosted.org/bob.db.nist_sre12/index.html>`_ or the `Latest Version <https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.nist_sre12/master/index.html>`_ of the documentation.
 For a list of tutorials on this or the other packages ob Bob_, or information on submitting issues, asking questions and starting discussions, please visit its website.
 
 .. _bob: https://www.idiap.ch/software/bob
