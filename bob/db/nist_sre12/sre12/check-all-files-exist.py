@@ -36,14 +36,14 @@ with open(filelist) as fp:
       ok += 1
     else:
       nok += 1
-      print 'file ' + path + ' not found. ' + str(nok) + ' incorrect paths'
+      print ('file ' + path + ' not found. ' + str(nok) + ' incorrect paths')
 
     if fileno == step:
-      print str(fileno) + ' files checked'
+      print (str(fileno) + ' files checked')
       step += 2000
 
 if nok==0:
-  print 'all files were found in the filesystem'
+  print ('all files were found in the filesystem')
 else:
-  print str(ok) + ' filenames found in the filesystem'
-  print str(nok) + ' filenames not found in the filesystem'
+  print (str(ok) + ' filenames found in the filesystem')
+  print (str(nok) + ' filenames not found in the filesystem')
