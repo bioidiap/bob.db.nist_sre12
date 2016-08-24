@@ -37,13 +37,13 @@ To generate the NIST SRE 2012 database do the following:
 
 # Generate file lists required to populate the SQL database
 
-  - change base directories for NIST SRE 2006, 2008, 2010 and 2012 by editing bob/db/nist_sre12/sre12/generate-file-lists.py
+  - Change base directories for NIST SRE 2006, 2008, 2010 and 2012 by editing bob/db/nist_sre12/sre12/generate-file-lists.py
 
-  - create file lists and key files for (all, male, female) protocols and (all, c1, c2, c3, c4, c5) NIST SRE 2012 core conditions
+  - Create file lists and key files for (all, male, female) protocols and (all, c1, c2, c3, c4, c5) NIST SRE 2012 core conditions
 
     ./generate-file-lists.py
 
-  - check that file lists point to actual files
+  - Check that file lists point to actual files
 
     ./check-all-files-exist.py
 
