@@ -24,18 +24,22 @@ import os
 import fnmatch
 import sys
 import re
+import tarfile
 
 sre12dir = '/idiap/resource/database/nist_sre/SRE16/LDC2016E45_2012_NIST_SRE'
 sre10dir = '/idiap/resource/database/nist_sre/SRE10/eval'
 sre08dir = '/idiap/resource/database/nist_sre/SRE08'
 sre06dir = '/idiap/resource/database/nist_sre/SRE06/r108_1_1'
 
-#trialkey = sre12dir + '/docs/trialkeys/NIST_SRE12_core_trial_key.csv'
-trialkey = '/idiap/home/mferras/temp/exp/sre12-eval/docs/NIST_SRE12_core_trial_key.v1.csv'
-speakerfiles = sre12dir + '/docs/NIST_SRE12_target_speaker_tables_v2.1/NIST_SRE12_target_speaker_2_files_map.v2.1.txt'
-newspeakerfiles = '/idiap/home/mferras/temp/exp/sre12-eval/NIST_SRE12_target_speaker_tables_v3/NIST_SRE12_evaluation_release_target_speaker_2_files_map.v3.txt'
-speakerdata = sre12dir + '/docs/NIST_SRE12_target_speaker_tables_v2.1/NIST_SRE12_target_speaker_speakertable.v2.csv'
-newspeakerdata = '/idiap/home/mferras/temp/exp/sre12-eval/NIST_SRE12_target_speaker_tables_v3/NIST_SRE12_evaluation_release_target_speaker_speakertable.v3.csv'
+
+scriptDir = os.path.dirname(os.path.realpath(sys.argv[0]))
+nistDir = scriptDir + '/' + 'nist' 
+trialkey = nistDir + '/NIST_SRE12_core_trial_key.v1.csv'
+speakerfiles = nistDir + '/NIST_SRE12_target_speaker_2_files_map.v2.1.txt'
+newspeakerfiles = nistDir + '/NIST_SRE12_evaluation_release_target_speaker_2_files_map.v3.txt'
+speakerdata = nistDir + '/NIST_SRE12_target_speaker_speakertable.v2.csv'
+newspeakerdata = nistDir + '/NIST_SRE12_evaluation_release_target_speaker_speakertable.v3.csv'
+
 
 
 def correctPathFromFile (f):
@@ -197,7 +201,20 @@ def readTrialKey(filename):
 
   return keys
 
+def decompressNIST(path):
+  opener, mode = tarfile.open, 'r:bz2'
+  cwd = os.getcwd()
+  os.chdir(os.path.dirname(os.path.realpath(sys.argv[0])))
+  try:
+    f = opener(path, mode)
+    try: f.extractall()
+    finally: f.close()
+  finally:
+    os.chdir(cwd)
 
+nistFile = scriptDir + '/' + 'nist.tar.bz2'
+print ('decompressing ' + nistFile)
+decompressNIST (nistFile)
 
 print ('generating file lists for all protocols and groups')
 #print ('reading spkid-to-files mapping')
@@ -213,11 +230,9 @@ spkdata = dict ( spkdata.items() + newspkdata.items() )
 #print ('reading core condition trial key')
 key = readTrialKey(trialkey)
 
-sre12dir = os.path.dirname(os.path.realpath(sys.argv[0]))
+protocolDir = scriptDir + '/' + 'protocols'
 
-protocolDir = sre12dir + '/' + 'protocols'
-
-with open (sre12dir + '/' + 'all_files.lst','w') as fpall:
+with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
   included_all = {}
 
   for protocol,gender in [('male','m'), ('female','f')]:
