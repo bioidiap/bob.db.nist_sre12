@@ -32,10 +32,10 @@ setup(
     name='bob.db.nist_sre12',
     version=version,
     description='Speaker verification protocol on the NIST SRE 2012',
-    url='https://github.com/bioidiap/bob.db.nist_sre12',
+    url='https://gitlab.idiap.ch/bob/bob.db.nist_sre12',
     license='GPLv3',
-    author='Elie Khoury',
-    author_email='Elie.Khoury@idiap.ch',
+    author='Marc Ferras',
+    author_email='marc.ferras@idiap.ch',
     keywords = "Spear, Speaker Recognition, Speaker verification, Audio processing, NIST SRE 2012, Database",
     long_description=open('README.rst').read(),
 
