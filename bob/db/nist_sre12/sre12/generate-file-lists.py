@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-# Script to generate a list of entries of the form 'path client_id gender'
+# Script to generate a list of entries of the form 'path side client_id gender'
 # from the protocol lists.
 
 
