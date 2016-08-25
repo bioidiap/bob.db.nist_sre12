@@ -46,234 +46,75 @@ def test_query():
 
   db = bob.db.nist_sre12.Database()
 
-  files = db.objects(protocol='female', groups='eval', purposes='enroll')
+  # all
+  assert(len(db.objects(protocol='all', groups='eval-core-all', purposes='enroll')) == 55019)
+  assert(len(db.objects(protocol='all', groups='eval-core-all', purposes='probe')) == 73106)
+  assert(len(db.objects(protocol='all', groups='eval-core-c1', purposes='enroll')) == 2379)
+  assert(len(db.objects(protocol='all', groups='eval-core-c1', purposes='probe')) == 22887)
+  assert(len(db.objects(protocol='all', groups='eval-core-c2', purposes='enroll')) == 54919)
+  assert(len(db.objects(protocol='all', groups='eval-core-c2', purposes='probe')) == 14274)
+  assert(len(db.objects(protocol='all', groups='eval-core-c3', purposes='enroll')) == 2379)
+  assert(len(db.objects(protocol='all', groups='eval-core-c3', purposes='probe')) == 17572)
+  assert(len(db.objects(protocol='all', groups='eval-core-c4', purposes='enroll')) == 54919)
+  assert(len(db.objects(protocol='all', groups='eval-core-c4', purposes='probe')) == 11391)
+  assert(len(db.objects(protocol='all', groups='eval-core-c5', purposes='enroll')) == 54919)
+  assert(len(db.objects(protocol='all', groups='eval-core-c5', purposes='probe')) == 6182)
 
-  import ipdb ; ipdb.set_trace()
-
-  x = files[0].load ('/idiap/resource/database/nist_sre/SRE12/r141_2_1/sp12-01','.sph')
-
-  return
-
-  assert len(db.groups()) == 5
-  assert len(db.groups(protocol='male')) == 5
-  assert len(db.groups(protocol='female')) == 5
-
-  # For Male protocol
-  assert len(db.clients(protocol='male')) == 16680
-  assert len(db.clients(protocol='male', world_gender='male')) == 7482
-  assert len(db.clients(protocol='male', world_gender='female')) == 9961
-  assert len(db.clients(protocol='male', groups='world', world_gender='male')) == 6767 # 6766
-  assert len(db.clients(protocol='male', groups='world', world_gender='female')) == 9198
-  assert len(db.clients(protocol='male', groups='world')) == 15965
-  assert len(db.clients(protocol='male', groups='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='male', groups='optional_world_1', world_gender='female')) == 941
-  assert len(db.clients(protocol='male', groups='optional_world_1')) == 1614
-  assert len(db.clients(protocol='male', groups='optional_world_2',  world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='male', groups='optional_world_2',  world_gender='female')) == 941
-  assert len(db.clients(protocol='male', groups='optional_world_2')) == 1614
-  assert len(db.clients(protocol='male', groups='dev')) == 680
-  assert len(db.clients(protocol='male', groups='eval')) == 763
-
-  assert len(db.clients(protocol='male', groups='world', subworld='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='male', groups='world', subworld='optional_world_1', world_gender='female')) == 941
-  assert len(db.clients(protocol='male', groups='world', subworld='optional_world_1')) == 1614
-  assert len(db.clients(protocol='male', groups='world', subworld='optional_world_2',  world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='male', groups='world', subworld='optional_world_2',  world_gender='female')) == 941
-  assert len(db.clients(protocol='male', groups='world', subworld='optional_world_2')) == 1614
-
-  assert len(db.model_ids(protocol='male')) == 16680
-  assert len(db.model_ids(protocol='male', world_gender='male')) == 7482
-  assert len(db.model_ids(protocol='male', world_gender='female')) == 9961
-  assert len(db.model_ids(protocol='male', groups='world', world_gender='male')) == 6767 # 6766
-  assert len(db.model_ids(protocol='male', groups='world', world_gender='female')) == 9198
-  assert len(db.model_ids(protocol='male', groups='world')) == 15965
-  assert len(db.model_ids(protocol='male', groups='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='male', groups='optional_world_1', world_gender='female')) == 941
-  assert len(db.model_ids(protocol='male', groups='optional_world_1')) == 1614
-  assert len(db.model_ids(protocol='male', groups='optional_world_2',  world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='male', groups='optional_world_2',  world_gender='female')) == 941
-  assert len(db.model_ids(protocol='male', groups='optional_world_2')) == 1614
-  assert len(db.model_ids(protocol='male', groups='dev')) == 680
-  assert len(db.model_ids(protocol='male', groups='eval')) == 763
-
-  assert len(db.model_ids(protocol='male', groups='world', subworld='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='male', groups='world', subworld='optional_world_1', world_gender='female')) == 941
-  assert len(db.model_ids(protocol='male', groups='world', subworld='optional_world_1')) == 1614
-  assert len(db.model_ids(protocol='male', groups='world', subworld='optional_world_2',  world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='male', groups='world', subworld='optional_world_2',  world_gender='female')) == 941
-  assert len(db.model_ids(protocol='male', groups='world', subworld='optional_world_2')) == 1614
-
-  assert len(db.objects(protocol='male', groups='world', world_gender='male')) == 33322 # 33311
-  assert len(db.objects(protocol='male', groups='world', world_gender='female')) == 42521 # 42532
-  assert len(db.objects(protocol='male', groups='world')) == 75843
-
-  assert len(db.objects(protocol='male', groups='optional_world_1', world_gender='male')) == 13714
-  assert len(db.objects(protocol='male', groups='optional_world_1', world_gender='female')) == 17810
-  assert len(db.objects(protocol='male', groups='optional_world_1')) == 31524
-  assert len(db.objects(protocol='male', groups='optional_world_2', world_gender='male')) == 13714
-  assert len(db.objects(protocol='male', groups='optional_world_2', world_gender='female')) == 17810
-  assert len(db.objects(protocol='male', groups='optional_world_2')) == 31524
-
-  assert len(db.objects(protocol='male', groups='world', subworld='optional_world_1', world_gender='male')) == 13714
-  assert len(db.objects(protocol='male', groups='world', subworld='optional_world_1', world_gender='female')) == 17810
-  assert len(db.objects(protocol='male', groups='world', subworld='optional_world_1')) == 31524
-  assert len(db.objects(protocol='male', groups='world', subworld='optional_world_2', world_gender='male')) == 13714
-  assert len(db.objects(protocol='male', groups='world', subworld='optional_world_2', world_gender='female')) == 17810
-  assert len(db.objects(protocol='male', groups='world', subworld='optional_world_2')) == 31524
-
-  assert len(db.objects(protocol='male', groups='dev', purposes='enroll')) == 16941
-  assert len(db.objects(protocol='male', groups='dev', purposes='enroll', model_ids='MIX104296_M')) == 12
-  assert len(db.objects(protocol='male', groups='dev', purposes='probe')) == 19866
-
-  assert len(db.objects(protocol='male', groups='eval', purposes='enroll')) == 47480 # 47486 (see LOGS)
-  assert len(db.objects(protocol='male', groups='eval', purposes='enroll', model_ids='MIX104296_M')) == 21
-  assert len(db.objects(protocol='male', groups='eval', purposes='probe')) == 29728
-
-  # For Female protocol
-  assert len(db.clients(protocol='female')) == 17038
-  assert len(db.clients(protocol='female', world_gender='female')) == 10271
-  assert len(db.clients(protocol='female', world_gender='male')) == 7922
-  assert len(db.clients(protocol='female', groups='world', world_gender='female')) == 9198
-  assert len(db.clients(protocol='female', groups='world', world_gender='male')) == 6767 # 6766
-  assert len(db.clients(protocol='female', groups='world')) == 15965
-  assert len(db.clients(protocol='female', groups='optional_world_1', world_gender='female')) == 941
-  assert len(db.clients(protocol='female', groups='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='female', groups='optional_world_1')) == 1614
-  assert len(db.clients(protocol='female', groups='optional_world_2', world_gender='female')) == 941
-  assert len(db.clients(protocol='female', groups='optional_world_2', world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='female', groups='optional_world_2')) == 1614
-  assert len(db.clients(protocol='female', groups='dev')) == 1039
-  assert len(db.clients(protocol='female', groups='eval')) == 1155
-
-  assert len(db.clients(protocol='female', groups='world', subworld='optional_world_1', world_gender='female')) == 941
-  assert len(db.clients(protocol='female', groups='world', subworld='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='female', groups='world', subworld='optional_world_1')) == 1614
-  assert len(db.clients(protocol='female', groups='world', subworld='optional_world_2',  world_gender='female')) == 941
-  assert len(db.clients(protocol='female', groups='world', subworld='optional_world_2',  world_gender='male')) == 673 # 672
-  assert len(db.clients(protocol='female', groups='world', subworld='optional_world_2')) == 1614
-
-  assert len(db.model_ids(protocol='female')) == 17038
-  assert len(db.model_ids(protocol='female', world_gender='female')) == 10271
-  assert len(db.model_ids(protocol='female', world_gender='male')) == 7922
-  assert len(db.model_ids(protocol='female', groups='world', world_gender='female')) == 9198
-  assert len(db.model_ids(protocol='female', groups='world', world_gender='male')) == 6767 # 6766
-  assert len(db.model_ids(protocol='female', groups='world')) == 15965
-  assert len(db.model_ids(protocol='female', groups='optional_world_1', world_gender='female')) == 941
-  assert len(db.model_ids(protocol='female', groups='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='female', groups='optional_world_1')) == 1614
-  assert len(db.model_ids(protocol='female', groups='optional_world_2', world_gender='female')) == 941
-  assert len(db.model_ids(protocol='female', groups='optional_world_2', world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='female', groups='optional_world_2')) == 1614
-  assert len(db.model_ids(protocol='female', groups='dev')) == 1039
-  assert len(db.model_ids(protocol='female', groups='eval')) == 1155
-
-  assert len(db.model_ids(protocol='female', groups='world', subworld='optional_world_1', world_gender='female')) == 941
-  assert len(db.model_ids(protocol='female', groups='world', subworld='optional_world_1', world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='female', groups='world', subworld='optional_world_1')) == 1614
-  assert len(db.model_ids(protocol='female', groups='world', subworld='optional_world_2',  world_gender='female')) == 941
-  assert len(db.model_ids(protocol='female', groups='world', subworld='optional_world_2',  world_gender='male')) == 673 # 672
-  assert len(db.model_ids(protocol='female', groups='world', subworld='optional_world_2')) == 1614
-
-  assert len(db.objects(protocol='female', groups='world', world_gender='male')) == 33322 # 33311
-  assert len(db.objects(protocol='female', groups='world', world_gender='female')) == 42521 # 42532
-  assert len(db.objects(protocol='female', groups='world')) == 75843
-
-  assert len(db.objects(protocol='female', groups='optional_world_1', world_gender='female')) == 17810
-  assert len(db.objects(protocol='female', groups='optional_world_1', world_gender='male')) == 13714
-  assert len(db.objects(protocol='female', groups='optional_world_1')) == 31524
-  assert len(db.objects(protocol='female', groups='optional_world_2', world_gender='female')) == 17810
-  assert len(db.objects(protocol='female', groups='optional_world_2', world_gender='male')) == 13714
-  assert len(db.objects(protocol='female', groups='optional_world_2')) == 31524
-
-  assert len(db.objects(protocol='female', groups='world', subworld='optional_world_1', world_gender='female')) == 17810
-  assert len(db.objects(protocol='female', groups='world', subworld='optional_world_1', world_gender='male')) == 13714
-  assert len(db.objects(protocol='female', groups='world', subworld='optional_world_1')) == 31524
-  assert len(db.objects(protocol='female', groups='world', subworld='optional_world_2', world_gender='female')) == 17810
-  assert len(db.objects(protocol='female', groups='world', subworld='optional_world_2', world_gender='male')) == 13714
-  assert len(db.objects(protocol='female', groups='world', subworld='optional_world_2')) == 31524
-
-  assert len(db.objects(protocol='female', groups='dev', purposes='enroll')) == 24693
-  assert len(db.objects(protocol='female', groups='dev', purposes='enroll', model_ids='MIX108878_F')) == 30
-  assert len(db.objects(protocol='female', groups='dev', purposes='probe')) == 25980
-
-  assert len(db.objects(protocol='female', groups='eval', purposes='enroll')) == 66192 # 66220 (see LOGS)
-  assert len(db.objects(protocol='female', groups='eval', purposes='enroll', model_ids='MIX108878_F')) == 33
-  assert len(db.objects(protocol='female', groups='eval', purposes='probe')) == 43378
+  assert(len(db.eval_key(protocol='all', groups='eval-core-all')) == 1880434)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c1')) == 111534)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c2')) == 626036)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c3')) == 72940)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c4')) == 486090)
+  assert(len(db.eval_key(protocol='all', groups='eval-core-c5')) == 248631)
 
 
-@db_available
-def test_query_ztnorm():
-  from pkg_resources import resource_filename
+  # male
+  assert(len(db.objects(protocol='male', groups='eval-core-all', purposes='enroll')) == 23351)
+  assert(len(db.objects(protocol='male', groups='eval-core-all', purposes='probe')) == 29728)
+  assert(len(db.objects(protocol='male', groups='eval-core-c1', purposes='enroll')) == 651)
+  assert(len(db.objects(protocol='male', groups='eval-core-c1', purposes='probe')) == 8850)
+  assert(len(db.objects(protocol='male', groups='eval-core-c2', purposes='enroll')) == 23311)
+  assert(len(db.objects(protocol='male', groups='eval-core-c2', purposes='probe')) == 5451)
+  assert(len(db.objects(protocol='male', groups='eval-core-c3', purposes='enroll')) == 651)
+  assert(len(db.objects(protocol='male', groups='eval-core-c3', purposes='probe')) == 7048)
+  assert(len(db.objects(protocol='male', groups='eval-core-c4', purposes='enroll')) == 23311)
+  assert(len(db.objects(protocol='male', groups='eval-core-c4', purposes='probe')) == 4386)
+  assert(len(db.objects(protocol='male', groups='eval-core-c5', purposes='enroll')) == 23311)
+  assert(len(db.objects(protocol='male', groups='eval-core-c5', purposes='probe')) == 2421)
 
-  db = bob.db.nist_sre12.Database()
+  assert(len(db.eval_key(protocol='male', groups='eval-core-all')) == 564430)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c1')) == 23478)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c2')) == 185511)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c3')) == 17576)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c4')) == 143727)
+  assert(len(db.eval_key(protocol='male', groups='eval-core-c5')) == 73008)
 
-  # For Male protocol
-  assert len(db.tclients(protocol='male', gender='male')) == 121
-  assert len(db.tclients(protocol='male', gender='female')) == 0
-  assert len(db.tclients(protocol='male')) == 121
-  assert len(db.tclients(protocol='male', groups='dev', gender='male')) == 121
-  assert len(db.tclients(protocol='male', groups='dev', gender='female')) == 0
-  assert len(db.tclients(protocol='male', groups='dev')) == 121
-  assert len(db.tclients(protocol='male', groups='eval', gender='male')) == 121
-  assert len(db.tclients(protocol='male', groups='eval', gender='female')) == 0
-  assert len(db.tclients(protocol='male', groups='eval')) == 121
+  # female
+  assert(len(db.objects(protocol='female', groups='eval-core-all', purposes='enroll')) == 33405)
+  assert(len(db.objects(protocol='female', groups='eval-core-all', purposes='probe')) == 43378)
+  assert(len(db.objects(protocol='female', groups='eval-core-c1', purposes='enroll')) == 1735)
+  assert(len(db.objects(protocol='female', groups='eval-core-c1', purposes='probe')) == 14037)
+  assert(len(db.objects(protocol='female', groups='eval-core-c2', purposes='enroll')) == 33345)
+  assert(len(db.objects(protocol='female', groups='eval-core-c2', purposes='probe')) == 8823)
+  assert(len(db.objects(protocol='female', groups='eval-core-c3', purposes='enroll')) == 1735)
+  assert(len(db.objects(protocol='female', groups='eval-core-c3', purposes='probe')) == 10524)
+  assert(len(db.objects(protocol='female', groups='eval-core-c4', purposes='enroll')) == 33345)
+  assert(len(db.objects(protocol='female', groups='eval-core-c4', purposes='probe')) == 7005)
+  assert(len(db.objects(protocol='female', groups='eval-core-c5', purposes='enroll')) == 33345)
+  assert(len(db.objects(protocol='female', groups='eval-core-c5', purposes='probe')) == 3761)
 
-  assert len(db.tobjects(protocol='male', gender='male')) == 1181
-  assert len(db.tobjects(protocol='male', gender='female')) == 0
-  assert len(db.tobjects(protocol='male')) == 1181
-  assert len(db.tobjects(protocol='male', groups='dev', gender='male')) == 1181
-  assert len(db.tobjects(protocol='male', groups='dev', gender='female')) == 0
-  assert len(db.tobjects(protocol='male', groups='dev')) == 1181
-  assert len(db.tobjects(protocol='male', groups='eval', gender='male')) == 1181
-  assert len(db.tobjects(protocol='male', groups='eval', gender='female')) == 0
-  assert len(db.tobjects(protocol='male', groups='eval')) == 1181
-
-  assert len(db.zobjects(protocol='male', gender='male')) == 1411
-  assert len(db.zobjects(protocol='male', gender='female')) == 0
-  assert len(db.zobjects(protocol='male')) == 1411
-  assert len(db.zobjects(protocol='male', groups='dev', gender='male')) == 1411
-  assert len(db.zobjects(protocol='male', groups='dev', gender='female')) == 0
-  assert len(db.zobjects(protocol='male', groups='dev')) == 1411
-  assert len(db.zobjects(protocol='male', groups='eval', gender='male')) == 1411
-  assert len(db.zobjects(protocol='male', groups='eval', gender='female')) == 0
-  assert len(db.zobjects(protocol='male', groups='eval')) == 1411
-
-  # For Female protocol
-  assert len(db.tclients(protocol='female', gender='female')) == 183
-  assert len(db.tclients(protocol='female', gender='male')) == 0
-  assert len(db.tclients(protocol='female')) == 183
-  assert len(db.tclients(protocol='female', groups='dev', gender='female')) == 183
-  assert len(db.tclients(protocol='female', groups='dev', gender='male')) == 0
-  assert len(db.tclients(protocol='female', groups='dev')) == 183
-  assert len(db.tclients(protocol='female', groups='eval', gender='female')) == 183
-  assert len(db.tclients(protocol='female', groups='eval', gender='male')) == 0
-  assert len(db.tclients(protocol='female', groups='eval')) == 183
-
-  assert len(db.tobjects(protocol='female', gender='female')) == 1643
-  assert len(db.tobjects(protocol='female', gender='male')) == 0
-  assert len(db.tobjects(protocol='female')) == 1643
-  assert len(db.tobjects(protocol='female', groups='dev', gender='female')) == 1643
-  assert len(db.tobjects(protocol='female', groups='dev', gender='male')) == 0
-  assert len(db.tobjects(protocol='female', groups='dev')) == 1643
-  assert len(db.tobjects(protocol='female', groups='eval', gender='female')) == 1643
-  assert len(db.tobjects(protocol='female', groups='eval', gender='male')) == 0
-  assert len(db.tobjects(protocol='female', groups='eval')) == 1643
-
-  assert len(db.zobjects(protocol='female', gender='female')) == 2117
-  assert len(db.zobjects(protocol='female', gender='male')) == 0
-  assert len(db.zobjects(protocol='female')) == 2117
-  assert len(db.zobjects(protocol='female', groups='dev', gender='female')) == 2117
-  assert len(db.zobjects(protocol='female', groups='dev', gender='male')) == 0
-  assert len(db.zobjects(protocol='female', groups='dev')) == 2117
-  assert len(db.zobjects(protocol='female', groups='eval', gender='female')) == 2117
-  assert len(db.zobjects(protocol='female', groups='eval', gender='male')) == 0
-  assert len(db.zobjects(protocol='female', groups='eval')) == 2117
-
+  assert(len(db.eval_key(protocol='female', groups='eval-core-all')) == 1316004)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c1')) == 88056)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c2')) == 440525)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c3')) == 55364)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c4')) == 342363)
+  assert(len(db.eval_key(protocol='female', groups='eval-core-c5')) == 175623)
 
 @db_available
 def test_driver_api():
-
+#
   from bob.db.base.script.dbmanage import main
-  assert main('nist_sre12 dumplist --self-test'.split()) == 0
-  assert main('nist_sre12 checkfiles --directory . --extension .sph --self-test'.split()) == 0
+#  assert main('nist_sre12 dumplist --self-test'.split()) == 0
+#  assert main('nist_sre12 checkfiles --directory . --extension .sph --self-test'.split()) == 0
+  assert main('nist_sre12 checkfiles --extension .sph --self-test'.split()) == 0
 
