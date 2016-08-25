@@ -230,23 +230,22 @@ spkdata = dict ( spkdata.items() + newspkdata.items() )
 #print ('reading core condition trial key')
 key = readTrialKey(trialkey)
 
-protocolDir = scriptDir + '/' + 'protocols'
+protocolDir = os.path.join(scriptDir, 'protocols')
 
 with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
   included_all = {}
 
-  for protocol,gender in [('male','m'), ('female','f')]:
-    for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
-      dirname = protocolDir + '/' + protocol + '/' + group
-      cond = group
-#      cond = '-'.join(group.split('-')[1:])
+  for group in ['eval']:
+    for protocol in ['core-all','core-c1','core-c2','core-c3','core-c4','core-c5']:
+      dirname = os.path.join(protocolDir,group,protocol)
+      cond = group + '-' + protocol
       try:
         os.makedirs (dirname)
       except:
         pass
 
       with open (dirname + '/for_models.lst','w') as fp:
-        spkids = list(set([ k['spkid'] for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]))
+        spkids = list(set([ k['spkid'] for k in key if (k[cond]) ]))
         included_models = {}
         for spkid in spkids:
           modelfiles = spkdata[spkid]['files']
@@ -263,7 +262,7 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
               included_all[(path,side)] = True
 
       with open (dirname + '/for_probes.lst','w') as fp:
-        tests = list(set([ (k['testfile'], k['testside'], k['spkid']) for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]))
+        tests = list(set([ (k['testfile'], k['testside'], k['spkid']) for k in key if (k[cond]) ]))
         included_files ={}
         for test in tests:
           path = test[0]
@@ -279,61 +278,9 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
             included_all[(path,side)] = True
 
       with open (dirname + '/key.lst','w') as fp:
-        keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if (k[cond]) and (spkdata[k['spkid']]['gender'] == gender)  ]
+        keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if (k[cond]) ]
         for k in keycond:
           spkid = k[0]
           testid = k[1]
           target = k[2]
           fp.write(spkid + ' ' + testid + ' ' + target + '\n')
- 
-  for protocol,gender in [('all','all')]:
-      for group in ['eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5']:
-        dirname = protocolDir + '/' + protocol + '/' + group
-#        cond = '-'.join(group.split('-')[1:])
-        cond = group
-        try:
-          os.makedirs (dirname)
-        except:
-          pass
- 
-        with open (dirname + '/for_models.lst','w') as fp:
-          spkids = list(set([ k['spkid'] for k in key if k[cond] ]))
-          included_models = {}
-          for spkid in spkids:
-            modelfiles = spkdata[spkid]['files']
-            gend = 'male' if spkdata[spkid]['gender'] == 'm' else 'female'
-            for x in modelfiles:
-              path = x[0]
-              side = x[1]
-
-              if (path,side) not in included_models:
-                fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-                included_models[(path,side)] = True
-
-              if (path,side) not in included_all:
-                fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-                included_all[(path,side)] = True
-
-        with open (dirname + '/for_probes.lst','w') as fp:
-          tests = list(set([ (k['testfile'], k['testside'], k['spkid']) for k in key if k[cond] ]))
-          included_files = {}
-          for test in tests:
-            path = test[0]
-            side = test[1]
-            gend = 'male' if spkdata[test[2]]['gender'] == 'm' else 'female'
-
-            if (path,side) not in included_files:
-              fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-              included_files[(path,side)] = True
-
-            if (path,side) not in included_all:
-              fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
-              included_all[(path,side)] = True
-
-        with open (dirname + '/key.lst','w') as fp:
-          keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if k[cond]]
-          for k in keycond:
-            spkid = k[0]
-            testid = k[1]
-            target = k[2]
-            fp.write(spkid + ' ' + testid + ' ' + target + '\n')
