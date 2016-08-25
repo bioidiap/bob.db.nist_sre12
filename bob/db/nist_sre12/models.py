@@ -36,6 +36,10 @@ protocolPurpose_file_association = Table('protocolPurpose_file_association', Bas
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('file_id',  String(20), ForeignKey('file.id')))
 
+modelProbe_association = Table('modelProbe_association', Base.metadata,
+  Column('model_id', String(20), ForeignKey('client.id')),
+  Column('probe_id',  String(20), ForeignKey('file.probe_id')))
+
 protocolPurpose_client_association = Table('protocolPurpose_client_association', Base.metadata,
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('client_id',  String(20), ForeignKey('client.id')))
@@ -49,6 +53,9 @@ class Client(Base):
   id = Column(String(20), primary_key=True) # speaker_pin
   gender_choices = ('male', 'female')
   gender = Column(Enum(*gender_choices))
+
+  # For Python: A direct link to the File objects associated with this ProtcolPurpose
+#  probes = relationship("File", secondary=modelProbe_association, backref=backref("client", order_by=id))
 
   def __init__(self, id, gender):
     self.id = id
@@ -67,9 +74,9 @@ class File(Base, bob.db.base.File):
   id = Column(Integer, primary_key=True)
   # Key identifier of the client associated with this file
   client_id = Column(String(20), ForeignKey('client.id')) # for SQL
-  probe_id = Column(String(20))
+  probe_id = Column(String(20), unique=True)
   # Unique path to this file inside the database
-  path = Column(String(100))
+  path = Column(String(150))
   side_choices = ('a','b')
   side = Column(Enum(*side_choices))
 
@@ -81,6 +88,7 @@ class File(Base, bob.db.base.File):
     bob.db.base.File.__init__(self, path = path)
     self.client_id = client_id
     self.probe_id = os.path.splitext(os.path.basename(path))[0] + '_' + side
+    print ('probe_id is ' + self.probe_id)
     self.side = side
 
   def make_path(self, directory=None, extension=None, add_side=True):
@@ -178,7 +186,8 @@ class ProtocolPurpose(Base):
   # Id of the protocol associated with this protocol purpose object
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
-  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
+#  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
+  group_choices = ('eval')
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
   purpose_choices = ('enroll', 'probe')

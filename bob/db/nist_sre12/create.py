@@ -66,57 +66,60 @@ def add_files(session, all_files, verbose):
 def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   """Adds protocols"""
 
-  protocols = os.listdir(protocol_dir)
+  groups = os.listdir(protocol_dir)
   protocolPurpose_list = [ 
-    ('eval-core-all', 'enroll', 'eval-core-all/for_models.lst'), ('eval-core-all', 'probe', 'eval-core-all/for_probes.lst'),
-    ('eval-core-c1', 'enroll', 'eval-core-c1/for_models.lst'), ('eval-core-c1', 'probe', 'eval-core-c1/for_probes.lst'),
-    ('eval-core-c2', 'enroll', 'eval-core-c2/for_models.lst'), ('eval-core-c2', 'probe', 'eval-core-c2/for_probes.lst'),
-    ('eval-core-c3', 'enroll', 'eval-core-c3/for_models.lst'), ('eval-core-c3', 'probe', 'eval-core-c3/for_probes.lst'),
-    ('eval-core-c4', 'enroll', 'eval-core-c4/for_models.lst'), ('eval-core-c4', 'probe', 'eval-core-c4/for_probes.lst'),
-    ('eval-core-c5', 'enroll', 'eval-core-c5/for_models.lst'), ('eval-core-c5', 'probe', 'eval-core-c5/for_probes.lst'),
+    ('core-all', 'enroll', 'for_models.lst'), ('core-all', 'probe', 'core-all/for_probes.lst'),
+    ('core-c1', 'enroll', 'for_models.lst'), ('core-c1', 'probe', 'core-c1/for_probes.lst'),
+    ('core-c2', 'enroll', 'for_models.lst'), ('core-c2', 'probe', 'for_probes.lst'),
+    ('core-c3', 'enroll', 'for_models.lst'), ('core-c3', 'probe', 'for_probes.lst'),
+    ('core-c4', 'enroll', 'for_models.lst'), ('core-c4', 'probe', 'for_probes.lst'),
+    ('core-c5', 'enroll', 'for_models.lst'), ('core-c5', 'probe', 'for_probes.lst'),
 ]
 
-
-  for proto in protocols:
-    p = Protocol(proto)
-    # Add protocol
-    if verbose: print("Adding protocol %s..." % (proto))
-    session.add(p)
-    session.flush()
-    session.refresh(p)
-
-    # Add protocol purposes
-    for purpose in protocolPurpose_list:
-      pu = ProtocolPurpose(p.id, purpose[0], purpose[1])
-      if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
-      session.add(pu)
+  for group in groups:
+    protocols = os.listdir(os.path.join(protocol_dir,group))
+    for proto in protocols:
+      p = Protocol(proto)
+      # Add protocol
+      if verbose: print("Adding protocol %s..." % (proto))
+      session.add(p)
       session.flush()
-      session.refresh(pu)
+      session.refresh(p)
 
-      pu_client_dict = {}
-      # Add files attached with this protocol purpose
-      f = open(os.path.join(protocol_dir, proto, purpose[2]))
-      for line in f:
-        l = line.split()
-        path = l[0]
-        side = l[1]
-        c_id = l[2]
-        if (path,side) in file_dict:
-          if verbose>1: print("    Adding protocol file '%s %s %s'..." % (purpose[1], path,side ))
-          # add file into files field of purpose record
-          pu.files.append(file_dict[(path,side)])
-          c_id = file_dict[(path,side)].client_id
+      # Add protocol purposes
+      for purpose in protocolPurpose_list:
+        pu = ProtocolPurpose(p.id, purpose[0], purpose[1])
+        if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
+        session.add(pu)
+        session.flush()
+        session.refresh(pu)
 
-          # If Client does not exist, add it to the database
-          if (not c_id in pu_client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
-            if verbose>1: print("    Adding protocol client '%s'..." % (c_id, ))
-            if c_id in client_dict:
-              pu.clients.append(client_dict[c_id])
-              pu_client_dict[c_id] = client_dict[c_id]
-            else:
-              raise RuntimeError("Client '%s' is in the protocol list but not in the database" % c_id)
-        else:
-          raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
+        pu_client_dict = {}
+        # Add files attached with this protocol purpose
+        f = open(os.path.join(protocol_dir, group, proto, purpose[2]))
+        for line in f:
+          l = line.split()
+          path = l[0]
+          side = l[1]
+          c_id = l[2]
+
+          # add files and clients into purpose entry (either enroll or probe)
+          if (path,side) in file_dict:
+            if verbose>1: print("    Adding protocol file to purpose %s '%s %s'..." % (purpose[1], path, side, ))
+            # add file into files field of purpose record
+            pu.files.append(file_dict[(path,side)])
+            c_id = file_dict[(path,side)].client_id
+  
+            # If Client does not exist, add it to the enroll purpose
+            if (not c_id in pu_client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
+              if verbose>1: print("    Adding protocol client to purpose %s '%s'..." % (purpose[1], c_id, ))
+              if c_id in client_dict:
+                pu.clients.append(client_dict[c_id])
+                pu_client_dict[c_id] = client_dict[c_id]
+              else:
+                raise RuntimeError("Client '%s' is in the protocol list but not in the database" % c_id)
+          else:
+            raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
 
 
 def create_tables(args):
