@@ -20,7 +20,7 @@
 """
 
 import os, numpy
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, or_, and_, not_
+from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, or_, and_, not_
 from bob.db.base.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
@@ -48,13 +48,30 @@ protocolPurpose_file_association = Table('protocolPurpose_file_association', Bas
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('file_id',  String(20), ForeignKey('file.id')))
 
-modelProbe_association = Table('modelProbe_association', Base.metadata,
-  Column('model_id', String(20), ForeignKey('client.id')),
-  Column('probe_id',  String(20), ForeignKey('file.probe_id')))
-
 protocolPurpose_client_association = Table('protocolPurpose_client_association', Base.metadata,
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('client_id',  String(20), ForeignKey('client.id')))
+
+
+class ClientProbeLink(Base):
+  """Client/probe associations, i.e. trial target speaker / test segment"""
+
+  __tablename__ = 'client_probe_link'
+
+  client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
+  probe_id = Column(String(20), ForeignKey('file.probe_id'), primary_key=True)
+  protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
+  target = Column(Boolean)
+
+  def __init__(self, client_id, probe_id, protocol_id, target):
+    self.client_id = client_id
+    self.probe_id = probe_id
+    self.protocol_id = protocol_id
+    self.target = target
+
+  def __repr__(self):
+    return "ClientProbe(%s, %s)" % (self.client_id, self.probe_id)
+
 
 class Client(Base):
   """Database clients, marked by an integer identifier and the group they belong to"""
@@ -67,7 +84,7 @@ class Client(Base):
   gender = Column(Enum(*gender_choices))
 
   # For Python: A direct link to the File objects associated with this ProtcolPurpose
-#  probes = relationship("File", secondary=modelProbe_association, backref=backref("client", order_by=id))
+#  probes = relationship("File", secondary=ClientProbeLink, backref=backref("client", order_by=id))
 
   def __init__(self, id, gender):
     self.id = id
@@ -169,8 +186,6 @@ class File(Base, bob.db.base.File):
       data = numpy.cast['float'](audio)
       return rate, data
     
-
-
 class Protocol(Base):
   """NIST SRE 2012 protocols"""
 

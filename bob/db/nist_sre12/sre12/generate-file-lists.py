@@ -278,9 +278,10 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
             included_all[(path,side)] = True
 
       with open (dirname + '/key.lst','w') as fp:
-        keycond = [ (k['spkid'], k['testid'], k['target']) for k in key if (k[cond]) ]
+        keycond = [ (k['spkid'], k['testid'], k['testside'], k['target']) for k in key if (k[cond]) ]
         for k in keycond:
           spkid = k[0]
           testid = k[1]
-          target = k[2]
-          fp.write(spkid + ' ' + testid + ' ' + target + '\n')
+          testside = k[2]
+          target = k[3]
+          fp.write(spkid + ' ' + testid + '_' + testside + ' ' + target + '\n')

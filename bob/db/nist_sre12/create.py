@@ -91,19 +91,6 @@ def add_files(session, all_files, verbose):
       file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
   return (file_dict, client_dict)
 
-def add_trials(session, protocol_dir, verbose):
-  """Adds trials as lsits of probes in client table"""
-
-  groups = os.listdir(protocol_dir)
-  for group in groups:
-    print 'group is ', group
-    protocols = os.listdir(os.path.join(protocol_dir,group))
-    for proto in protocols:
-      print 'proto is ', proto
-      key = read_eval_key (protocol_dir, proto , group)
-      # fill probes field of client table with thhe tesrt segments for each target speaker
-      for client_id in key.keys():
-        print 'trial',client_id, key[client_id]
 
 def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   """Adds protocols"""
@@ -127,6 +114,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       session.add(p)
       session.flush()
       session.refresh(p)
+
 
       # Add protocol purposes
       for purpose in protocolPurpose_list:
@@ -165,6 +153,18 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
           else:
             raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
 
+      # Add trial entries
+      key = read_eval_key (protocol_dir, proto , group)
+      # fill probes field of client table with thhe tesrt segments for each target speaker
+      for client_id in key.keys():
+        for k in key[client_id]:
+          probe_id = k[0]
+          target = True if k[1]=='target' else False
+          if verbose>1: print("  Adding trial to protocol %s (%s %s %s)..." % (p.name, client_id, probe_id, target))
+          trial = ClientProbeLink (client_id, probe_id, p.id, target)
+          session.add(trial)
+          session.flush()
+          session.refresh(trial)
 
 def create_tables(args):
   """Creates all necessary tables (only to be used at the first time)"""
@@ -197,7 +197,6 @@ def create(args):
   s = session_try_nolock(args.type, args.files[0], echo=(args.verbose > 2))
   file_dict, client_dict = add_files(s, os.path.join(args.datadir, 'all_files.lst'), args.verbose)
   add_protocols(s, os.path.join(args.datadir, 'protocols'), file_dict, client_dict, args.verbose)
-  add_trials(s, os.path.join(args.datadir, 'protocols'), args.verbose)
   s.commit()
   s.close()
 
