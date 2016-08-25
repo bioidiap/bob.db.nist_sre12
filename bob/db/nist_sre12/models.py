@@ -27,8 +27,20 @@ from sqlalchemy.ext.declarative import declarative_base
 
 import scipy.io.wavfile
 import tempfile
-
+import re
 import bob.db.base
+
+
+def build_probeid (path, side):
+
+  m = re.match (r'.*(SRE..).*',path)
+  if m != None:
+    sreid = m.group(1).lower()
+    return os.path.splitext(os.path.basename(path))[0] + '_' + sreid + '_' + side
+  else:
+    return os.path.splitext(os.path.basename(path))[0] + '_' + side
+
+
 
 Base = declarative_base()
 
@@ -87,8 +99,7 @@ class File(Base, bob.db.base.File):
     # call base class constructor
     bob.db.base.File.__init__(self, path = path)
     self.client_id = client_id
-    self.probe_id = os.path.splitext(os.path.basename(path))[0] + '_' + side
-    print ('probe_id is ' + self.probe_id)
+    self.probe_id = build_probeid (path, side)
     self.side = side
 
   def make_path(self, directory=None, extension=None, add_side=True):
@@ -187,7 +198,7 @@ class ProtocolPurpose(Base):
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
 #  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
-  group_choices = ('eval')
+  group_choices = ('eval',)
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
   purpose_choices = ('enroll', 'probe')

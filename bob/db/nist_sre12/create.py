@@ -23,6 +23,34 @@ import os
 
 from .models import *
 
+def read_eval_key(protocolDir, protocol, group):
+  """Returns a dictionary of tuples with (test segment and target value) for each client. 
+
+  Keyword Parameters:
+
+    protocol
+      The protocol to consider ('eval')
+
+    groups
+      The groups to which the subjects attached to the models belong ('core-all','core-c1','core-c2','core-c3','core-c4','core-c5')
+
+  """
+  from pkg_resources import resource_filename
+
+  key = {}
+  fn = os.path.join(protocolDir,group,protocol,'key.lst')
+  with open(fn) as fp:
+    for l in fp:
+      l = l.strip()
+      s = l.split()
+      tgt = s[0]
+      tst = s[1]
+      target = s[2]
+      if tgt not in key:
+        key[tgt] = []
+      key[tgt].append((tst, target))
+  return key
+
 def add_files(session, all_files, verbose):
   """Add files to the NIST SRE 2012 database."""
 
@@ -63,13 +91,27 @@ def add_files(session, all_files, verbose):
       file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
   return (file_dict, client_dict)
 
+def add_trials(session, protocol_dir, verbose):
+  """Adds trials as lsits of probes in client table"""
+
+  groups = os.listdir(protocol_dir)
+  for group in groups:
+    print 'group is ', group
+    protocols = os.listdir(os.path.join(protocol_dir,group))
+    for proto in protocols:
+      print 'proto is ', proto
+      key = read_eval_key (protocol_dir, proto , group)
+      # fill probes field of client table with thhe tesrt segments for each target speaker
+      for client_id in key.keys():
+        print 'trial',client_id, key[client_id]
+
 def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   """Adds protocols"""
 
   groups = os.listdir(protocol_dir)
   protocolPurpose_list = [ 
-    ('core-all', 'enroll', 'for_models.lst'), ('core-all', 'probe', 'core-all/for_probes.lst'),
-    ('core-c1', 'enroll', 'for_models.lst'), ('core-c1', 'probe', 'core-c1/for_probes.lst'),
+    ('core-all', 'enroll', 'for_models.lst'), ('core-all', 'probe', 'for_probes.lst'),
+    ('core-c1', 'enroll', 'for_models.lst'), ('core-c1', 'probe', 'for_probes.lst'),
     ('core-c2', 'enroll', 'for_models.lst'), ('core-c2', 'probe', 'for_probes.lst'),
     ('core-c3', 'enroll', 'for_models.lst'), ('core-c3', 'probe', 'for_probes.lst'),
     ('core-c4', 'enroll', 'for_models.lst'), ('core-c4', 'probe', 'for_probes.lst'),
@@ -88,7 +130,9 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
 
       # Add protocol purposes
       for purpose in protocolPurpose_list:
-        pu = ProtocolPurpose(p.id, purpose[0], purpose[1])
+        if purpose[0] != proto:
+          continue
+        pu = ProtocolPurpose(p.id, group, purpose[1])
         if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
         session.add(pu)
         session.flush()
@@ -153,6 +197,7 @@ def create(args):
   s = session_try_nolock(args.type, args.files[0], echo=(args.verbose > 2))
   file_dict, client_dict = add_files(s, os.path.join(args.datadir, 'all_files.lst'), args.verbose)
   add_protocols(s, os.path.join(args.datadir, 'protocols'), file_dict, client_dict, args.verbose)
+  add_trials(s, os.path.join(args.datadir, 'protocols'), args.verbose)
   s.commit()
   s.close()
 
