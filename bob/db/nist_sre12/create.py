@@ -156,15 +156,23 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       # Add trial entries
       key = read_eval_key (protocol_dir, proto , group)
       # fill probes field of client table with thhe tesrt segments for each target speaker
+      n = 0
+      nextn = 10000
+      if verbose>1:
+        print("  Adding trials to protocol %s") % p.name
       for client_id in key.keys():
         for k in key[client_id]:
           probe_id = k[0]
           target = True if k[1]=='target' else False
-          if verbose>1: print("  Adding trial to protocol %s (%s %s %s)..." % (p.name, client_id, probe_id, target))
+#          if verbose>1: print("  Adding trial to protocol %s (%s %s %s)..." % (p.name, client_id, probe_id, target))
           trial = ClientProbeLink (client_id, probe_id, p.id, target)
           session.add(trial)
           session.flush()
           session.refresh(trial)
+          n += 1
+          if n>=nextn and verbose>1:
+            print ("  Added %d trials to protocol %s..." % (n, p.name))
+            nextn += 10000
 
 def create_tables(args):
   """Creates all necessary tables (only to be used at the first time)"""
