@@ -31,7 +31,7 @@ import re
 import bob.db.base
 
 
-def build_probeid (path, side):
+def build_fileid (path, side):
 
   m = re.match (r'.*(SRE..).*',path)
   if m != None:
@@ -59,15 +59,13 @@ class ClientProbeLink(Base):
   __tablename__ = 'client_probe_link'
 
   client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
-  probe_id = Column(String(20), ForeignKey('file.probe_id'), primary_key=True)
+  file_id = Column(String(20), ForeignKey('file.id'), primary_key=True)
   protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
-  target = Column(Boolean)
 
-  def __init__(self, client_id, probe_id, protocol_id, target):
+  def __init__(self, client_id, file_id, protocol_id):
     self.client_id = client_id
-    self.probe_id = probe_id
+    self.file_id = file_id
     self.protocol_id = protocol_id
-    self.target = target
 
   def __repr__(self):
     return "ClientProbe(%s, %s)" % (self.client_id, self.probe_id)
@@ -100,10 +98,10 @@ class File(Base, bob.db.base.File):
   __tablename__ = 'file'
 
   # Key identifier for the file
-  id = Column(Integer, primary_key=True)
+#  id = Column(Integer, primary_key=True)
   # Key identifier of the client associated with this file
+  id = Column(String(20), primary_key=True)
   client_id = Column(String(20), ForeignKey('client.id')) # for SQL
-  probe_id = Column(String(20), unique=True)
   # Unique path to this file inside the database
   path = Column(String(150))
   side_choices = ('a','b')
@@ -114,9 +112,9 @@ class File(Base, bob.db.base.File):
 
   def __init__(self, client_id, path, side):
     # call base class constructor
-    bob.db.base.File.__init__(self, path = path)
+#    bob.db.base.File.__init__(self, path = path)
+    self.id = build_fileid (path, side)
     self.client_id = client_id
-    self.probe_id = build_probeid (path, side)
     self.side = side
 
   def make_path(self, directory=None, extension=None, add_side=True):
@@ -138,10 +136,8 @@ class File(Base, bob.db.base.File):
     # create the path
     if add_side:
       return str(self.path + '-' + self.side + (extension or ''))
-#      return str(os.path.join(directory or '', self.path + '-' + self.side + (extension or '')))
     else:
       return str(self.path + (extension or ''))
-#      return str(os.path.join(directory or '', self.path + (extension or '')))
 
   def load(self, directory=None, extension='.sph'):
     """Loads the data at the specified location and using the given extension.

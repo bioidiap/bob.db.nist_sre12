@@ -142,7 +142,7 @@ class Database(bob.db.base.SQLiteDatabase):
     return model_id
 
 
-  def objects(self, protocol=None, purposes=None, model_ids=None, groups=None, classes=None):
+  def objects(self, protocol=None, purposes=None, model_ids=None, groups=None):
     """Returns a set of filenames for the specific query by the user.
     WARNING: Files used as impostor access for several different models are
     only listed one and refer to only a single model
@@ -189,6 +189,7 @@ class Database(bob.db.base.SQLiteDatabase):
     # Now query the database
     retval = []
 
+    print ('model id=' + model_ids)
     if('enroll' in purposes):
       q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
           filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll' ))
@@ -197,10 +198,14 @@ class Database(bob.db.base.SQLiteDatabase):
       q = q.order_by(File.path, File.side, File.client_id)
       retval += list(q)
 
-
     if('probe' in purposes):
-      q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
+      if model_ids == ():
+        q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
           filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ))
+      else:
+        print ('model id=' + model_ids)
+        q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
+          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ).join(ClientProbeLink.client_id.in_(model_ids) ))
       q = q.order_by(File.path, File.side)
       retval += list(q)
 

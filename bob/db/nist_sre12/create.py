@@ -163,9 +163,8 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       for client_id in key.keys():
         for k in key[client_id]:
           probe_id = k[0]
-          target = True if k[1]=='target' else False
 #          if verbose>1: print("  Adding trial to protocol %s (%s %s %s)..." % (p.name, client_id, probe_id, target))
-          trial = ClientProbeLink (client_id, probe_id, p.id, target)
+          trial = ClientProbeLink (client_id, probe_id, p.id)
           session.add(trial)
           session.flush()
           session.refresh(trial)
