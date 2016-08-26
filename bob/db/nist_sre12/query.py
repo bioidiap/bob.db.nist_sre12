@@ -189,12 +189,11 @@ class Database(bob.db.base.SQLiteDatabase):
     # Now query the database
     retval = []
 
-    print ('model id=' + model_ids)
     if('enroll' in purposes):
       q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
           filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll' ))
       if model_ids:
-        q = q.filter(File.client_id.in_(model_ids))
+       q = q.filter(File.client_id.in_(model_ids))
       q = q.order_by(File.path, File.side, File.client_id)
       retval += list(q)
 
@@ -203,9 +202,9 @@ class Database(bob.db.base.SQLiteDatabase):
         q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
           filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ))
       else:
-        print ('model id=' + model_ids)
+        print ('model id=' + ' '.join(model_ids))
         q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
-          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ).join(ClientProbeLink.client_id.in_(model_ids) ))
+          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ).join(ClientProbeLink))
       q = q.order_by(File.path, File.side)
       retval += list(q)
 

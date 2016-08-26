@@ -33,12 +33,22 @@ import bob.db.base
 
 def build_fileid (path, side):
 
-  m = re.match (r'.*(SRE..).*',path)
-  if m != None:
-    sreid = m.group(1).lower()
-    return os.path.splitext(os.path.basename(path))[0] + '_' + sreid + '_' + side
+  basename = os.path.splitext(os.path.basename(path))[0]
+
+  # check if basename includes sre12
+  msre12 = re.match (r'.*_sre12', basename)
+  bsre12 = True if msre12!= None else False
+
+  if bsre12:
+    # basename has sre12 already
+    return basename + '_' + side
   else:
-    return os.path.splitext(os.path.basename(path))[0] + '_' + side
+    m = re.match (r'.*(SRE..).*',path)
+    if m != None:
+      sreid = m.group(1).lower()
+      return basename + '_' + sreid + '_' + side
+    else:
+      return basename + '_' + side
 
 
 
@@ -115,6 +125,7 @@ class File(Base, bob.db.base.File):
 #    bob.db.base.File.__init__(self, path = path)
     self.id = build_fileid (path, side)
     self.client_id = client_id
+    self.path = path
     self.side = side
 
   def make_path(self, directory=None, extension=None, add_side=True):

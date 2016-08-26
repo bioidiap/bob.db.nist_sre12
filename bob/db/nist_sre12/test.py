@@ -46,6 +46,7 @@ def test_query():
 
   db = bob.db.nist_sre12.Database()
 
+  import ipdb ; ipdb.set_trace()
   # all
   print (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='enroll')))
 #  assert(len(db.objects(protocol='all', groups='eval-core-all', purposes='enroll')) == 55019)

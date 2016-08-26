@@ -158,6 +158,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       # fill probes field of client table with thhe tesrt segments for each target speaker
       n = 0
       nextn = 10000
+      ntotal = sum(len(v) for v in key.itervalues())
       if verbose>1:
         print("  Adding trials to protocol %s") % p.name
       for client_id in key.keys():
@@ -170,7 +171,7 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
           session.refresh(trial)
           n += 1
           if n>=nextn and verbose>1:
-            print ("  Added %d trials to protocol %s..." % (n, p.name))
+            print ("  Added %d/%d trials to protocol %s..." % (n, ntotal, p.name))
             nextn += 10000
 
 def create_tables(args):
