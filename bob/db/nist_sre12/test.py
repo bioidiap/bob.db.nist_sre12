@@ -44,34 +44,51 @@ def db_available(test):
 def test_query():
   from pkg_resources import resource_filename
 
+#  print ''
+#  print 'loading DB'
   db = bob.db.nist_sre12.Database()
+#  print 'done'
 
-  import ipdb ; ipdb.set_trace()
+#  import ipdb ; ipdb.set_trace()
   # all
-  print (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='enroll')))
-#  assert(len(db.objects(protocol='all', groups='eval-core-all', purposes='enroll')) == 55019)
-#  assert(len(db.objects(protocol='all', groups='eval-core-all', purposes='probe')) == 73106)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c1', purposes='enroll')) == 2379)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c1', purposes='probe')) == 22887)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c2', purposes='enroll')) == 54919)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c2', purposes='probe')) == 14274)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c3', purposes='enroll')) == 2379)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c3', purposes='probe')) == 17572)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c4', purposes='enroll')) == 54919)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c4', purposes='probe')) == 11391)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c5', purposes='enroll')) == 54919)
-#  assert(len(db.objects(protocol='all', groups='eval-core-c5', purposes='probe')) == 6182)
+#  assert (len(db.objects(protocol='core-c1', groups='eval', purposes='enroll')) == 2379)
+#  assert (len(db.objects(protocol='core-c1', groups='eval', purposes='probe')) == 22887 )
+#  assert (len(db.objects(protocol='core-c1', groups='eval', model_ids='110559', purposes='probe')) == 1815)
 
-#  assert(len(db.eval_key(protocol='all', groups='eval-core-all')) == 1880434)
-#  assert(len(db.eval_key(protocol='all', groups='eval-core-c1')) == 111534)
-#  assert(len(db.eval_key(protocol='all', groups='eval-core-c2')) == 626036)
-#  assert(len(db.eval_key(protocol='all', groups='eval-core-c3')) == 72940)
-#  assert(len(db.eval_key(protocol='all', groups='eval-core-c4')) == 486090)
-#  assert(len(db.eval_key(protocol='all', groups='eval-core-c5')) == 248631)
+  print len(db.objects(protocol='core-all', groups='eval', purposes='probe', gender='male'))
+  print len(db.objects(protocol='core-all', groups='eval', purposes='enroll', gender='male'))
+  print len(db.objects(protocol='core-all', groups='eval', purposes='enroll'))
+  print len(db.objects(protocol='core-all', groups='eval', purposes='probe'))
+  assert (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='probe')) == 518 )
+
+  assert(len(db.objects(groups='eval', protocol='core-all', purposes='enroll')) == 55019)
+  assert(len(db.objects(groups='eval', protocol='core-all', purposes='probe')) == 73106)
+  assert(len(db.objects(groups='eval', protocol='core-c1', purposes='enroll')) == 2379)
+  assert(len(db.objects(groups='eval', protocol='core-c1', purposes='probe')) == 22887)
+  assert(len(db.objects(groups='eval', protocol='core-c2', purposes='enroll')) == 54919)
+  assert(len(db.objects(groups='eval', protocol='core-c2', purposes='probe')) == 14274)
+  assert(len(db.objects(groups='eval', protocol='core-c3', purposes='enroll')) == 2379)
+  assert(len(db.objects(groups='eval', protocol='core-c3', purposes='probe')) == 17572)
+  assert(len(db.objects(groups='eval', protocol='core-c4', purposes='enroll')) == 54919)
+  assert(len(db.objects(groups='eval', protocol='core-c4', purposes='probe')) == 11391)
+  assert(len(db.objects(groups='eval', protocol='core-c5', purposes='enroll')) == 54919)
+  assert(len(db.objects(groups='eval', protocol='core-c5', purposes='probe')) == 6182)
+
+  assert (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='enroll')) == 69 )
+  assert (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='probe')) == 518 )
+  assert (len(db.objects(protocol='core-c1', groups='eval', model_ids='120546', purposes='enroll')) == 55 )
+  assert (len(db.objects(protocol='core-c1', groups='eval', model_ids='120546', purposes='probe')) == 2538 )
+
+#  assert(len(db.eval_key(groups='eval', protocol='core-all')) == 1880434)
+#  assert(len(db.eval_key(groups='eval', protocol='core-c1')) == 111534)
+#  assert(len(db.eval_key(groups='eval', protocol='core-c2')) == 626036)
+#  assert(len(db.eval_key(groups='eval', protocol='core-c3')) == 72940)
+#  assert(len(db.eval_key(groups='eval', protocol='core-c4')) == 486090)
+#  assert(len(db.eval_key(groups='eval', protocol='core-c5')) == 248631)
 
 
   # male
-#  assert(len(db.objects(protocol='male', groups='eval-core-all', purposes='enroll')) == 23351)
+#  assert(len(db.objects(protocol='eval', groups='eval-core-all', purposes='enroll')) == 23351)
 #  assert(len(db.objects(protocol='male', groups='eval-core-all', purposes='probe')) == 29728)
 #  assert(len(db.objects(protocol='male', groups='eval-core-c1', purposes='enroll')) == 651)
 #  assert(len(db.objects(protocol='male', groups='eval-core-c1', purposes='probe')) == 8850)
@@ -84,12 +101,12 @@ def test_query():
 #  assert(len(db.objects(protocol='male', groups='eval-core-c5', purposes='enroll')) == 23311)
 #  assert(len(db.objects(protocol='male', groups='eval-core-c5', purposes='probe')) == 2421)
 
-#  assert(len(db.eval_key(protocol='male', groups='eval-core-all')) == 564430)
-#  assert(len(db.eval_key(protocol='male', groups='eval-core-c1')) == 23478)
-#  assert(len(db.eval_key(protocol='male', groups='eval-core-c2')) == 185511)
-#  assert(len(db.eval_key(protocol='male', groups='eval-core-c3')) == 17576)
-#  assert(len(db.eval_key(protocol='male', groups='eval-core-c4')) == 143727)
-#  assert(len(db.eval_key(protocol='male', groups='eval-core-c5')) == 73008)
+#  assert(len(db.eval_key(protocol='eval', groups='core-all')) == 564430)
+#  assert(len(db.eval_key(protocol='eval', groups='core-c1')) == 23478)
+#  assert(len(db.eval_key(protocol='eval', groups='core-c2')) == 185511)
+#  assert(len(db.eval_key(protocol='eval', groups='core-c3')) == 17576)
+#  assert(len(db.eval_key(protocol='eval', groups='core-c4')) == 143727)
+#  assert(len(db.eval_key(protocol='eval', groups='core-c5')) == 73008)
 
   # female
 #  assert(len(db.objects(protocol='female', groups='eval-core-all', purposes='enroll')) == 33405)
@@ -118,5 +135,5 @@ def test_driver_api():
   from bob.db.base.script.dbmanage import main
 #  assert main('nist_sre12 dumplist --self-test'.split()) == 0
 #  assert main('nist_sre12 checkfiles --directory . --extension .sph --self-test'.split()) == 0
-  assert main('nist_sre12 checkfiles --extension .sph --self-test'.split()) == 0
+#  assert main('nist_sre12 checkfiles --extension .sph --self-test'.split()) == 0
 

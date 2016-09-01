@@ -46,6 +46,11 @@ class Database(bob.db.base.SQLiteDatabase):
 
     return ProtocolPurpose.group_choices # Same as Client.group_choices for this database
 
+  def genders(self):
+    """Returns the names of all registered groups"""
+
+    return ('male','female')
+
   def clients(self, protocol=None, groups=None, filter_ids_unknown=True):
     """Returns a set of clients for the specific query by the user.
 
@@ -142,7 +147,7 @@ class Database(bob.db.base.SQLiteDatabase):
     return model_id
 
 
-  def objects(self, protocol=None, purposes=None, model_ids=None, groups=None):
+  def objects(self, protocol=None, purposes=None, model_ids=None, groups=None, gender=None):
     """Returns a set of filenames for the specific query by the user.
     WARNING: Files used as impostor access for several different models are
     only listed one and refer to only a single model
@@ -190,23 +195,58 @@ class Database(bob.db.base.SQLiteDatabase):
     retval = []
 
     if('enroll' in purposes):
-      q = self.query(File).join(Client).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
-          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'enroll' ))
-      if model_ids:
-       q = q.filter(File.client_id.in_(model_ids))
-      q = q.order_by(File.path, File.side, File.client_id)
-      retval += list(q)
+
+      if model_ids == ():
+        if gender == None:
+          q1l = self.query(ClientEnrollLink).join(Protocol).filter(Protocol.name.in_(protocol)).distinct().all()
+          if q.count()>0:
+            retval += list(q)
+        else:
+          q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
+          if len(q1l)>0:
+            file_ids = [ x.file_id for x in q1l]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
+
+      else:
+        if gender == None:
+          q1l = self.query(ClientEnrollLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct().all()
+          if q.count()>0:
+            retval += list(q)
+        else:
+          q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
+          if len(q1l)>0:
+            file_ids = [ x.file_id for x in q1l]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
 
     if('probe' in purposes):
       if model_ids == ():
-        q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
-          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ))
+        if gender == None:
+          q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.purpose == 'probe'))
+          if q.count()>0:
+            retval += list(q)
+        else:
+          q1l = self.query(ClientProbeLink).join(Client).join(Protocol).filter(and_(Protocol.name.in_(protocol), Client.gender == gender )).all()
+          if len(q1l)>0:
+            file_ids = [ x.file_id for x in q1l]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
       else:
-        print ('model id=' + ' '.join(model_ids))
-        q = self.query(File).join((ProtocolPurpose, File.protocolPurposes)).join(Protocol).\
-          filter(and_(Protocol.name.in_(protocol), ProtocolPurpose.sgroup.in_(groups), ProtocolPurpose.purpose == 'probe' ).join(ClientProbeLink))
-      q = q.order_by(File.path, File.side)
-      retval += list(q)
+        if gender == None:
+          q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct().all()
+          if q.count()>0:
+            retval += list(q)
+        else:
+          q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol), Client.gender == gender )).distinct().all()
+        if len(q1l)>0:
+          file_ids = [ x.file_id for x in q1l]
+          q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+          if q.count()>0:
+            retval += list(q)
 
     return list(set(retval)) # To remove duplicates
 

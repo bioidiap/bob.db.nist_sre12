@@ -82,10 +82,11 @@ def add_files(session, all_files, verbose):
     path, side, c_id, gender = line.split()
     # Append gender information to client id
     # since there are lots of wrong gender information
-    if gender == 'male': c_id = c_id + '_M'
-    elif gender == 'female': c_id = c_id + '_F'
-    else: raise RuntimeError("Gender unknown while parsing line '%s'." % line.strip())
-    if (not c_id in client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
+#    if gender == 'male': c_id = c_id + '_M'
+#    elif gender == 'female': c_id = c_id + '_F'
+#    else: raise RuntimeError("Gender unknown while parsing line '%s'." % line.strip())
+#    if (not c_id in client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
+    if (not c_id in client_dict) and c_id != 'M_ID_X':
       client_dict[c_id] = add_client(session, c_id, gender, verbose)
     if not (path,side) in file_dict:
       file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
@@ -140,10 +141,15 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
             if verbose>1: print("    Adding protocol file to purpose %s '%s %s'..." % (purpose[1], path, side, ))
             # add file into files field of purpose record
             pu.files.append(file_dict[(path,side)])
-            c_id = file_dict[(path,side)].client_id
-  
+#            c_id = file_dict[(path,side)].client_id
+            if purpose[1] == 'enroll':
+              ce = ClientEnrollLink (c_id, build_fileid(path, side), p.id)
+              session.add(ce)
+              session.flush()
+              session.refresh(ce)
+ 
             # If Client does not exist, add it to the enroll purpose
-            if (not c_id in pu_client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
+            if (not c_id in pu_client_dict) and c_id != 'M_ID_X':
               if verbose>1: print("    Adding protocol client to purpose %s '%s'..." % (purpose[1], c_id, ))
               if c_id in client_dict:
                 pu.clients.append(client_dict[c_id])

@@ -78,7 +78,24 @@ class ClientProbeLink(Base):
     self.protocol_id = protocol_id
 
   def __repr__(self):
-    return "ClientProbe(%s, %s)" % (self.client_id, self.probe_id)
+    return "ClientProbe(%s, %s)" % (self.client_id, self.file_id)
+
+class ClientEnrollLink(Base):
+  """Client/enroll associations, i.e. files used for enrolling this client"""
+
+  __tablename__ = 'client_enroll_link'
+
+  client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
+  file_id = Column(String(20), ForeignKey('file.id'), primary_key=True)
+  protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
+
+  def __init__(self, client_id, file_id, protocol_id):
+    self.client_id = client_id
+    self.file_id = file_id
+    self.protocol_id = protocol_id
+
+  def __repr__(self):
+    return "ClientFile(%s, %s)" % (self.client_id, self.file_id)
 
 
 class Client(Base):
@@ -111,20 +128,20 @@ class File(Base, bob.db.base.File):
 #  id = Column(Integer, primary_key=True)
   # Key identifier of the client associated with this file
   id = Column(String(20), primary_key=True)
-  client_id = Column(String(20), ForeignKey('client.id')) # for SQL
+#  client_id = Column(String(20), ForeignKey('client.id')) # for SQL
   # Unique path to this file inside the database
   path = Column(String(150))
   side_choices = ('a','b')
   side = Column(Enum(*side_choices))
 
   # for Python
-  client = relationship("Client", backref=backref("files", order_by=id))
+#  client = relationship("Client", backref=backref("files", order_by=id))
 
   def __init__(self, client_id, path, side):
     # call base class constructor
 #    bob.db.base.File.__init__(self, path = path)
     self.id = build_fileid (path, side)
-    self.client_id = client_id
+#    self.client_id = client_id
     self.path = path
     self.side = side
 
