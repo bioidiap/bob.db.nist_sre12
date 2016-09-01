@@ -21,11 +21,13 @@ NIST SRE 2012 database in the most obvious ways.
 """
 
 import os
-from bob.db.base import utils
 from .models import *
 from .driver import Interface
 
 import bob.db.base
+
+import bob.core
+logger = bob.core.log.setup("bob.db.nist_sre12")
 
 SQLITE_FILE = Interface().files()[0]
 
@@ -204,10 +206,15 @@ class Database(bob.db.base.SQLiteDatabase):
         else:
           q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
           if len(q1l)>0:
-            file_ids = [ x.file_id for x in q1l]
-            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-            if q.count()>0:
-              retval += list(q)
+            file_ids_big = [ x.file_id for x in q1l]
+            length = len(file_ids_big)
+            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+            for i in range(batches):
+              logger.info('querying batch {} of {} batches'.format(i, batches))
+              file_ids = file_ids_big[i*999:(i+1)*999]
+              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+              if q.count()>0:
+                retval += list(q)
 
       else:
         if gender == None:
@@ -217,10 +224,15 @@ class Database(bob.db.base.SQLiteDatabase):
         else:
           q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(ClientEnrollLink.client_id.in_(model_ids), Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
           if len(q1l)>0:
-            file_ids = [ x.file_id for x in q1l]
-            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-            if q.count()>0:
-              retval += list(q)
+            file_ids_big = [ x.file_id for x in q1l]
+            length = len(file_ids_big)
+            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+            for i in range(batches):
+              logger.info('querying batch {} of {} batches'.format(i, batches))
+              file_ids = file_ids_big[i*999:(i+1)*999]
+              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+              if q.count()>0:
+                retval += list(q)
 
     if('probe' in purposes):
       if model_ids == ():
@@ -231,10 +243,15 @@ class Database(bob.db.base.SQLiteDatabase):
         else:
           q1l = self.query(ClientProbeLink).join(Client).join(Protocol).filter(and_(Protocol.name.in_(protocol), Client.gender == gender )).all()
           if len(q1l)>0:
-            file_ids = [ x.file_id for x in q1l]
-            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-            if q.count()>0:
-              retval += list(q)
+            file_ids_big = [ x.file_id for x in q1l]
+            length = len(file_ids_big)
+            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+            for i in range(batches):
+              logger.info('querying batch {} of {} batches'.format(i, batches))
+              file_ids = file_ids_big[i*999:(i+1)*999]
+              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+              if q.count()>0:
+                retval += list(q)
       else:
         if gender == None:
           q = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct()
@@ -243,10 +260,15 @@ class Database(bob.db.base.SQLiteDatabase):
         else:
           q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol), Client.gender == gender )).distinct().all()
           if len(q1l)>0:
-            file_ids = [ x.file_id for x in q1l]
-            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-            if q.count()>0:
-              retval += list(q)
+            file_ids_big = [ x.file_id for x in q1l]
+            length = len(file_ids_big)
+            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+            for i in range(batches):
+              logger.info('querying batch {} of {} batches'.format(i, batches))
+              file_ids = file_ids_big[i*999:(i+1)*999]
+              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+              if q.count()>0:
+                retval += list(q)
 
     return list(set(retval)) # To remove duplicates
 
