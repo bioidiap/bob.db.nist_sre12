@@ -49,17 +49,16 @@ def test_query():
   db = bob.db.nist_sre12.Database()
 #  print 'done'
 
-#  import ipdb ; ipdb.set_trace()
   # all
 #  assert (len(db.objects(protocol='core-c1', groups='eval', purposes='enroll')) == 2379)
 #  assert (len(db.objects(protocol='core-c1', groups='eval', purposes='probe')) == 22887 )
 #  assert (len(db.objects(protocol='core-c1', groups='eval', model_ids='110559', purposes='probe')) == 1815)
 
-  print len(db.objects(protocol='core-all', groups='eval', purposes='probe', gender='male'))
-  print len(db.objects(protocol='core-all', groups='eval', purposes='enroll', gender='male'))
-  print len(db.objects(protocol='core-all', groups='eval', purposes='enroll'))
-  print len(db.objects(protocol='core-all', groups='eval', purposes='probe'))
-  assert (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='probe')) == 518 )
+#  print len(db.objects(protocol='core-all', groups='eval', purposes='probe', gender='male'))
+#  print len(db.objects(protocol='core-all', groups='eval', purposes='enroll', gender='male'))
+#  print len(db.objects(protocol='core-all', groups='eval', purposes='enroll'))
+#  print len(db.objects(protocol='core-all', groups='eval', purposes='probe'))
+#  assert (len(db.objects(protocol='core-all', groups='eval', model_ids='110552', purposes='probe')) == 518 )
 
   assert(len(db.objects(groups='eval', protocol='core-all', purposes='enroll')) == 55019)
   assert(len(db.objects(groups='eval', protocol='core-all', purposes='probe')) == 73106)

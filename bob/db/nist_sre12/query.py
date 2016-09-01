@@ -198,7 +198,7 @@ class Database(bob.db.base.SQLiteDatabase):
 
       if model_ids == ():
         if gender == None:
-          q1l = self.query(ClientEnrollLink).join(Protocol).filter(Protocol.name.in_(protocol)).distinct().all()
+          q = self.query(ClientEnrollLink).join(Protocol).filter(Protocol.name.in_(protocol)).distinct()
           if q.count()>0:
             retval += list(q)
         else:
@@ -211,11 +211,11 @@ class Database(bob.db.base.SQLiteDatabase):
 
       else:
         if gender == None:
-          q1l = self.query(ClientEnrollLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct().all()
+          q = self.query(ClientEnrollLink).join(Protocol).filter(and_(ClientEnrollLink.client_id.in_(model_ids), Protocol.name.in_(protocol) ))
           if q.count()>0:
             retval += list(q)
         else:
-          q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
+          q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(ClientEnrollLink.client_id.in_(model_ids), Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
           if len(q1l)>0:
             file_ids = [ x.file_id for x in q1l]
             q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
@@ -237,16 +237,16 @@ class Database(bob.db.base.SQLiteDatabase):
               retval += list(q)
       else:
         if gender == None:
-          q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct().all()
+          q = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct()
           if q.count()>0:
             retval += list(q)
         else:
           q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol), Client.gender == gender )).distinct().all()
-        if len(q1l)>0:
-          file_ids = [ x.file_id for x in q1l]
-          q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-          if q.count()>0:
-            retval += list(q)
+          if len(q1l)>0:
+            file_ids = [ x.file_id for x in q1l]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
 
     return list(set(retval)) # To remove duplicates
 
