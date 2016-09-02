@@ -163,9 +163,9 @@ class File(Base, bob.db.base.File):
     # assure that directory and extension are actually strings
     # create the path
     if add_side:
-      return str(self.path + '-' + self.side + (extension or ''))
+      return str(os.path.join((directory or ''),self.path + '-' + self.side + (extension or '')) )
     else:
-      return str(self.path + (extension or ''))
+      return str(os.path.join((directory or ''),self.path + (extension or ''))  )
 
   def load(self, directory=None, extension='.sph'):
     """Loads the data at the specified location and using the given extension.

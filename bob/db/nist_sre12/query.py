@@ -200,39 +200,35 @@ class Database(bob.db.base.SQLiteDatabase):
 
       if model_ids == ():
         if gender == None:
-          q = self.query(ClientEnrollLink).join(Protocol).filter(Protocol.name.in_(protocol)).distinct()
-          if q.count()>0:
-            retval += list(q)
+          q1l = self.query(ClientEnrollLink).join(Protocol).filter(Protocol.name.in_(protocol)).distinct().all()
         else:
           q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
-          if len(q1l)>0:
-            file_ids_big = [ x.file_id for x in q1l]
-            length = len(file_ids_big)
-            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
-            for i in range(batches):
-              logger.info('querying batch {} of {} batches'.format(i, batches))
-              file_ids = file_ids_big[i*999:(i+1)*999]
-              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-              if q.count()>0:
-                retval += list(q)
+        if len(q1l)>0:
+          file_ids_big = [ x.file_id for x in q1l]
+          length = len(file_ids_big)
+          batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+          for i in range(batches):
+            logger.info('querying batch {} of {} batches'.format(i, batches))
+            file_ids = file_ids_big[i*999:(i+1)*999]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
 
       else:
         if gender == None:
-          q = self.query(ClientEnrollLink).join(Protocol).filter(and_(ClientEnrollLink.client_id.in_(model_ids), Protocol.name.in_(protocol) ))
-          if q.count()>0:
-            retval += list(q)
+          q1l = self.query(ClientEnrollLink).join(Protocol).filter(and_(ClientEnrollLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).all()
         else:
           q1l = self.query(ClientEnrollLink).join(Client).join(Protocol).filter(and_(ClientEnrollLink.client_id.in_(model_ids), Protocol.name.in_(protocol),Client.gender == gender )).distinct().all()
-          if len(q1l)>0:
-            file_ids_big = [ x.file_id for x in q1l]
-            length = len(file_ids_big)
-            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
-            for i in range(batches):
-              logger.info('querying batch {} of {} batches'.format(i, batches))
-              file_ids = file_ids_big[i*999:(i+1)*999]
-              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-              if q.count()>0:
-                retval += list(q)
+        if len(q1l)>0:
+          file_ids_big = [ x.file_id for x in q1l]
+          length = len(file_ids_big)
+          batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+          for i in range(batches):
+            logger.info('querying batch {} of {} batches'.format(i, batches))
+            file_ids = file_ids_big[i*999:(i+1)*999]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
 
     if('probe' in purposes):
       if model_ids == ():
@@ -254,21 +250,19 @@ class Database(bob.db.base.SQLiteDatabase):
                 retval += list(q)
       else:
         if gender == None:
-          q = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct()
-          if q.count()>0:
-            retval += list(q)
+          q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol) )).distinct().all()
         else:
           q1l = self.query(ClientProbeLink).join(Protocol).filter(and_(ClientProbeLink.client_id.in_(model_ids), Protocol.name.in_(protocol), Client.gender == gender )).distinct().all()
-          if len(q1l)>0:
-            file_ids_big = [ x.file_id for x in q1l]
-            length = len(file_ids_big)
-            batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
-            for i in range(batches):
-              logger.info('querying batch {} of {} batches'.format(i, batches))
-              file_ids = file_ids_big[i*999:(i+1)*999]
-              q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
-              if q.count()>0:
-                retval += list(q)
+        if len(q1l)>0:
+          file_ids_big = [ x.file_id for x in q1l]
+          length = len(file_ids_big)
+          batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
+          for i in range(batches):
+            logger.info('querying batch {} of {} batches'.format(i, batches))
+            file_ids = file_ids_big[i*999:(i+1)*999]
+            q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
+            if q.count()>0:
+              retval += list(q)
 
     return list(set(retval)) # To remove duplicates
 
@@ -308,37 +302,3 @@ class Database(bob.db.base.SQLiteDatabase):
     """Returns the list of allowed purposes"""
 
     return ProtocolPurpose.purpose_choices
-
-  def eval_key(self, protocol=None, groups=None):
-    """Returns a list of key tuples with (target speaker, test segment and target value). This 
-    method does not use the SQL interface but reads the key file directly from disk (as this file 
-    can be huge ~2-80 million records)
-
-    Keyword Parameters:
-
-    protocol
-      The protocol to consider ('female', 'male')
-
-    groups
-      The groups to which the subjects attached to the models belong ('dev', 'eval', 'world')
-
-    """
-    from pkg_resources import resource_filename
-
-    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
-    groups = self.check_parameters_for_validity(groups, "group", self.groups())
-
-    key = []
-    for p in protocol:
-      for g in groups:
-        protocol_path = resource_filename(__name__, 'sre12/protocols')
-        fn = os.path.join(protocol_path,p,g,'key.lst')
-        with open(fn) as fp:
-          for l in fp:
-            l = l.strip()
-            s = l.split()
-            tgt = s[0]
-            tst = s[1]
-            target = s[2]
-            key.append((tgt, tst, target))
-    return key

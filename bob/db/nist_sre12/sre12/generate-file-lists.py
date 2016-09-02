@@ -26,11 +26,15 @@ import sys
 import re
 import tarfile
 
-sre12dir = '/idiap/resource/database/nist_sre/SRE16/LDC2016E45_2012_NIST_SRE'
-sre10dir = '/idiap/resource/database/nist_sre/SRE10/eval'
-sre08dir = '/idiap/resource/database/nist_sre/SRE08'
-sre06dir = '/idiap/resource/database/nist_sre/SRE06/r108_1_1'
+#sre12dir = '/idiap/resource/database/nist_sre/SRE16/LDC2016E45_2012_NIST_SRE'
+#sre10dir = '/idiap/resource/database/nist_sre/SRE10/eval'
+#sre08dir = '/idiap/resource/database/nist_sre/SRE08'
+#sre06dir = '/idiap/resource/database/nist_sre/SRE06/r108_1_1'
 
+sre12dir = 'SRE16/LDC2016E45_2012_NIST_SRE'
+sre10dir = 'SRE10/eval'
+sre08dir = 'SRE08'
+sre06dir = 'SRE06/r108_1_1'
 
 scriptDir = os.path.dirname(os.path.realpath(sys.argv[0]))
 nistDir = scriptDir + '/' + 'nist' 
