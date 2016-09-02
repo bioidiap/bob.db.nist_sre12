@@ -254,7 +254,7 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
         for spkid in spkids:
           modelfiles = spkdata[spkid]['files']
           for x in modelfiles:
-            path = x[0]
+            path, ext = os.path.splitext(x[0])
             side = x[1]
             gend = 'male' if spkdata[spkid]['gender'] == 'm' else 'female'
             if (path,side) not in included_models:
@@ -269,7 +269,7 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
         tests = list(set([ (k['testfile'], k['testside'], k['spkid']) for k in key if (k[cond]) ]))
         included_files ={}
         for test in tests:
-          path = test[0]
+          path, ext = os.path.splitext(test[0])
           side = test[1]
           spkid = 'M_ID_X'
           gend = 'male' if spkdata[test[2]]['gender'] == 'm' else 'female'
