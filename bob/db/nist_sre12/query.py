@@ -183,7 +183,7 @@ class Database(bob.db.base.SQLiteDatabase):
     Returns: A list of files which have the given properties.
     """
 
-    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names())
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names(), 'core-all')
     purposes = self.check_parameters_for_validity(purposes, "purpose", self.purposes())
     groups = self.check_parameters_for_validity(groups, "group", self.groups())
 
@@ -208,8 +208,10 @@ class Database(bob.db.base.SQLiteDatabase):
           length = len(file_ids_big)
           batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
           for i in range(batches):
-            logger.info('querying batch {} of {} batches'.format(i, batches))
+            logger.info('querying batch {} of {} batches'.format(i+1, batches))
             file_ids = file_ids_big[i*999:(i+1)*999]
+            if not file_ids:
+              continue
             q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
             if q.count()>0:
               retval += list(q)
@@ -224,8 +226,10 @@ class Database(bob.db.base.SQLiteDatabase):
           length = len(file_ids_big)
           batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
           for i in range(batches):
-            logger.info('querying batch {} of {} batches'.format(i, batches))
+            logger.info('querying batch {} of {} batches'.format(i+1, batches))
             file_ids = file_ids_big[i*999:(i+1)*999]
+            if not file_ids:
+              continue
             q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
             if q.count()>0:
               retval += list(q)
@@ -243,8 +247,10 @@ class Database(bob.db.base.SQLiteDatabase):
             length = len(file_ids_big)
             batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
             for i in range(batches):
-              logger.info('querying batch {} of {} batches'.format(i, batches))
+              logger.info('querying batch {} of {} batches'.format(i+1, batches))
               file_ids = file_ids_big[i*999:(i+1)*999]
+              if not file_ids:
+                continue
               q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
               if q.count()>0:
                 retval += list(q)
@@ -258,8 +264,10 @@ class Database(bob.db.base.SQLiteDatabase):
           length = len(file_ids_big)
           batches = int(length / 999) + 1 # 999 is the limit of sqlite in in_
           for i in range(batches):
-            logger.info('querying batch {} of {} batches'.format(i, batches))
+            logger.info('querying batch {} of {} batches'.format(i+1, batches))
             file_ids = file_ids_big[i*999:(i+1)*999]
+            if not file_ids:
+              continue
             q = self.query(File).filter(File.id.in_(file_ids)).order_by(File.id)
             if q.count()>0:
               retval += list(q)
