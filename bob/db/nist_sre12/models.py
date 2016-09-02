@@ -145,7 +145,11 @@ class File(Base, bob.db.base.File):
     self.path = path
     self.side = side
 
-  def make_path(self, directory=None, extension=None, add_side=True):
+  def __repr__(self):
+    """This function describes how to convert a File object into a string."""
+    return "<File('%s': '%s', '%s')>" % (str(self.id), str(self.path), str(self.side))
+
+  def make_path(self, directory=None, extension='.sph', add_side=True):
     """Wraps the current path so that a complete path is formed
 
     Keyword Parameters:
