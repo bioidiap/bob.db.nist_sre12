@@ -23,6 +23,34 @@ import os
 
 from .models import *
 
+def read_eval_key(protocolDir, protocol, group):
+  """Returns a dictionary of tuples with (test segment and target value) for each client. 
+
+  Keyword Parameters:
+
+    protocol
+      The protocol to consider ('eval')
+
+    groups
+      The groups to which the subjects attached to the models belong ('core-all','core-c1','core-c2','core-c3','core-c4','core-c5')
+
+  """
+  from pkg_resources import resource_filename
+
+  key = {}
+  fn = os.path.join(protocolDir,group,protocol,'key.lst')
+  with open(fn) as fp:
+    for l in fp:
+      l = l.strip()
+      s = l.split()
+      tgt = s[0]
+      tst = s[1]
+      target = s[2]
+      if tgt not in key:
+        key[tgt] = []
+      key[tgt].append((tst, target))
+  return key
+
 def add_files(session, all_files, verbose):
   """Add files to the NIST SRE 2012 database."""
 
@@ -54,70 +82,103 @@ def add_files(session, all_files, verbose):
     path, side, c_id, gender = line.split()
     # Append gender information to client id
     # since there are lots of wrong gender information
-    if gender == 'male': c_id = c_id + '_M'
-    elif gender == 'female': c_id = c_id + '_F'
-    else: raise RuntimeError("Gender unknown while parsing line '%s'." % line.strip())
-    if (not c_id in client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
+#    if gender == 'male': c_id = c_id + '_M'
+#    elif gender == 'female': c_id = c_id + '_F'
+#    else: raise RuntimeError("Gender unknown while parsing line '%s'." % line.strip())
+#    if (not c_id in client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
+    if (not c_id in client_dict) and c_id != 'M_ID_X':
       client_dict[c_id] = add_client(session, c_id, gender, verbose)
     if not (path,side) in file_dict:
       file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
   return (file_dict, client_dict)
 
+
 def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
   """Adds protocols"""
 
-  protocols = os.listdir(protocol_dir)
+  groups = os.listdir(protocol_dir)
   protocolPurpose_list = [ 
-    ('eval-core-all', 'enroll', 'eval-core-all/for_models.lst'), ('eval-core-all', 'probe', 'eval-core-all/for_probes.lst'),
-    ('eval-core-c1', 'enroll', 'eval-core-c1/for_models.lst'), ('eval-core-c1', 'probe', 'eval-core-c1/for_probes.lst'),
-    ('eval-core-c2', 'enroll', 'eval-core-c2/for_models.lst'), ('eval-core-c2', 'probe', 'eval-core-c2/for_probes.lst'),
-    ('eval-core-c3', 'enroll', 'eval-core-c3/for_models.lst'), ('eval-core-c3', 'probe', 'eval-core-c3/for_probes.lst'),
-    ('eval-core-c4', 'enroll', 'eval-core-c4/for_models.lst'), ('eval-core-c4', 'probe', 'eval-core-c4/for_probes.lst'),
-    ('eval-core-c5', 'enroll', 'eval-core-c5/for_models.lst'), ('eval-core-c5', 'probe', 'eval-core-c5/for_probes.lst'),
+    ('core-all', 'enroll', 'for_models.lst'), ('core-all', 'probe', 'for_probes.lst'),
+    ('core-c1', 'enroll', 'for_models.lst'), ('core-c1', 'probe', 'for_probes.lst'),
+    ('core-c2', 'enroll', 'for_models.lst'), ('core-c2', 'probe', 'for_probes.lst'),
+    ('core-c3', 'enroll', 'for_models.lst'), ('core-c3', 'probe', 'for_probes.lst'),
+    ('core-c4', 'enroll', 'for_models.lst'), ('core-c4', 'probe', 'for_probes.lst'),
+    ('core-c5', 'enroll', 'for_models.lst'), ('core-c5', 'probe', 'for_probes.lst'),
 ]
 
-
-  for proto in protocols:
-    p = Protocol(proto)
-    # Add protocol
-    if verbose: print("Adding protocol %s..." % (proto))
-    session.add(p)
-    session.flush()
-    session.refresh(p)
-
-    # Add protocol purposes
-    for purpose in protocolPurpose_list:
-      pu = ProtocolPurpose(p.id, purpose[0], purpose[1])
-      if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
-      session.add(pu)
+  for group in groups:
+    protocols = os.listdir(os.path.join(protocol_dir,group))
+    for proto in protocols:
+      p = Protocol(proto)
+      # Add protocol
+      if verbose: print("Adding protocol %s..." % (proto))
+      session.add(p)
       session.flush()
-      session.refresh(pu)
+      session.refresh(p)
 
-      pu_client_dict = {}
-      # Add files attached with this protocol purpose
-      f = open(os.path.join(protocol_dir, proto, purpose[2]))
-      for line in f:
-        l = line.split()
-        path = l[0]
-        side = l[1]
-        c_id = l[2]
-        if (path,side) in file_dict:
-          if verbose>1: print("    Adding protocol file '%s %s %s'..." % (purpose[1], path,side ))
-          # add file into files field of purpose record
-          pu.files.append(file_dict[(path,side)])
-          c_id = file_dict[(path,side)].client_id
 
-          # If Client does not exist, add it to the database
-          if (not c_id in pu_client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
-            if verbose>1: print("    Adding protocol client '%s'..." % (c_id, ))
-            if c_id in client_dict:
-              pu.clients.append(client_dict[c_id])
-              pu_client_dict[c_id] = client_dict[c_id]
-            else:
-              raise RuntimeError("Client '%s' is in the protocol list but not in the database" % c_id)
-        else:
-          raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
+      # Add protocol purposes
+      for purpose in protocolPurpose_list:
+        if purpose[0] != proto:
+          continue
+        pu = ProtocolPurpose(p.id, group, purpose[1])
+        if verbose>1: print("  Adding protocol purpose ('%s','%s')..." % (purpose[0], purpose[1]))
+        session.add(pu)
+        session.flush()
+        session.refresh(pu)
 
+        pu_client_dict = {}
+        # Add files attached with this protocol purpose
+        f = open(os.path.join(protocol_dir, group, proto, purpose[2]))
+        for line in f:
+          l = line.split()
+          path = l[0]
+          side = l[1]
+          c_id = l[2]
+
+          # add files and clients into purpose entry (either enroll or probe)
+          if (path,side) in file_dict:
+            if verbose>1: print("    Adding protocol file to purpose %s '%s %s'..." % (purpose[1], path, side, ))
+            # add file into files field of purpose record
+            pu.files.append(file_dict[(path,side)])
+#            c_id = file_dict[(path,side)].client_id
+            if purpose[1] == 'enroll':
+              ce = ClientEnrollLink (c_id, build_fileid(path, side), p.id)
+              session.add(ce)
+              session.flush()
+              session.refresh(ce)
+ 
+            # If Client does not exist, add it to the enroll purpose
+            if (not c_id in pu_client_dict) and c_id != 'M_ID_X':
+              if verbose>1: print("    Adding protocol client to purpose %s '%s'..." % (purpose[1], c_id, ))
+              if c_id in client_dict:
+                pu.clients.append(client_dict[c_id])
+                pu_client_dict[c_id] = client_dict[c_id]
+              else:
+                raise RuntimeError("Client '%s' is in the protocol list but not in the database" % c_id)
+          else:
+            raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
+
+      # Add trial entries
+      key = read_eval_key (protocol_dir, proto , group)
+      # fill probes field of client table with thhe tesrt segments for each target speaker
+      n = 0
+      nextn = 10000
+      ntotal = sum(len(v) for v in key.itervalues())
+      if verbose>1:
+        print("  Adding trials to protocol %s") % p.name
+      for client_id in key.keys():
+        for k in key[client_id]:
+          probe_id = k[0]
+#          if verbose>1: print("  Adding trial to protocol %s (%s %s %s)..." % (p.name, client_id, probe_id, target))
+          trial = ClientProbeLink (client_id, probe_id, p.id)
+          session.add(trial)
+          session.flush()
+          session.refresh(trial)
+          n += 1
+          if n>=nextn and verbose>1:
+            print ("  Added %d/%d trials to protocol %s..." % (n, ntotal, p.name))
+            nextn += 10000
 
 def create_tables(args):
   """Creates all necessary tables (only to be used at the first time)"""

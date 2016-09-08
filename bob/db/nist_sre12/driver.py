@@ -36,8 +36,7 @@ def dumplist(args):
       protocol=args.protocol,
       purposes=args.purpose,
       model_ids=args.client,
-      groups=args.group,
-      classes=args.sclass
+      groups=args.group
   )
 
   output = sys.stdout
@@ -76,7 +75,7 @@ def checkfiles(args):
 
   if bad:
     for f in bad:
-      output.write('Cannot find file "%s"\n' % (f.make_path(args.directory, args.extension),))
+      output.write('Cannot find file "%s"\n' % (f.make_path(args.directory, args.extension, add_side=False),))
     output.write('%d files (out of %d) were not found at "%s"\n' % \
         (len(bad), len(r), args.directory))
   else:
@@ -169,7 +168,7 @@ class Interface(BaseInterface):
 
     # the "checkfiles" action
     parser = subparsers.add_parser('checkfiles', help=checkfiles.__doc__)
-    parser.add_argument('-p', '--protocol', help="Gives the data for the given protocol.", choices=('male', 'female'), default='male')
+    parser.add_argument('-p', '--protocol', help="Gives the data for the given protocol.", choices=db.protocol_names() if db.is_valid() else ())
     parser.add_argument('-d', '--directory', help="if given, this path will be prepended to every entry returned.")
     parser.add_argument('-e', '--extension', help="if given, this extension will be appended to every entry returned.")
     parser.add_argument('--self-test', dest="selftest", action='store_true', help=argparse.SUPPRESS)

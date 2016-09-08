@@ -20,15 +20,37 @@
 """
 
 import os, numpy
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, or_, and_, not_
+from sqlalchemy import Table, Column, Integer, String, Boolean, ForeignKey, or_, and_, not_
 from bob.db.base.sqlalchemy_migration import Enum, relationship
 from sqlalchemy.orm import backref
 from sqlalchemy.ext.declarative import declarative_base
 
 import scipy.io.wavfile
 import tempfile
-
+import re
 import bob.db.base
+
+
+def build_fileid (path, side):
+
+  basename = os.path.splitext(os.path.basename(path))[0]
+
+  # check if basename includes sre12
+  msre12 = re.match (r'.*_sre12', basename)
+  bsre12 = True if msre12!= None else False
+
+  if bsre12:
+    # basename has sre12 already
+    return basename + '_' + side
+  else:
+    m = re.match (r'.*(SRE..).*',path)
+    if m != None:
+      sreid = m.group(1).lower()
+      return basename + '_' + sreid + '_' + side
+    else:
+      return basename + '_' + side
+
+
 
 Base = declarative_base()
 
@@ -40,6 +62,42 @@ protocolPurpose_client_association = Table('protocolPurpose_client_association',
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('client_id',  String(20), ForeignKey('client.id')))
 
+
+class ClientProbeLink(Base):
+  """Client/probe associations, i.e. trial target speaker / test segment"""
+
+  __tablename__ = 'client_probe_link'
+
+  client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
+  file_id = Column(String(20), ForeignKey('file.id'), primary_key=True)
+  protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
+
+  def __init__(self, client_id, file_id, protocol_id):
+    self.client_id = client_id
+    self.file_id = file_id
+    self.protocol_id = protocol_id
+
+  def __repr__(self):
+    return "ClientProbe(%s, %s)" % (self.client_id, self.file_id)
+
+class ClientEnrollLink(Base):
+  """Client/enroll associations, i.e. files used for enrolling this client"""
+
+  __tablename__ = 'client_enroll_link'
+
+  client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
+  file_id = Column(String(20), ForeignKey('file.id'), primary_key=True)
+  protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
+
+  def __init__(self, client_id, file_id, protocol_id):
+    self.client_id = client_id
+    self.file_id = file_id
+    self.protocol_id = protocol_id
+
+  def __repr__(self):
+    return "ClientFile(%s, %s)" % (self.client_id, self.file_id)
+
+
 class Client(Base):
   """Database clients, marked by an integer identifier and the group they belong to"""
 
@@ -49,6 +107,9 @@ class Client(Base):
   id = Column(String(20), primary_key=True) # speaker_pin
   gender_choices = ('male', 'female')
   gender = Column(Enum(*gender_choices))
+
+  # For Python: A direct link to the File objects associated with this ProtcolPurpose
+#  probes = relationship("File", secondary=ClientProbeLink, backref=backref("client", order_by=id))
 
   def __init__(self, id, gender):
     self.id = id
@@ -64,26 +125,31 @@ class File(Base, bob.db.base.File):
   __tablename__ = 'file'
 
   # Key identifier for the file
-  id = Column(Integer, primary_key=True)
+#  id = Column(Integer, primary_key=True)
   # Key identifier of the client associated with this file
-  client_id = Column(String(20), ForeignKey('client.id')) # for SQL
-  probe_id = Column(String(20))
+  id = Column(String(20), primary_key=True)
+#  client_id = Column(String(20), ForeignKey('client.id')) # for SQL
   # Unique path to this file inside the database
-  path = Column(String(100))
+  path = Column(String(150))
   side_choices = ('a','b')
   side = Column(Enum(*side_choices))
 
   # for Python
-  client = relationship("Client", backref=backref("files", order_by=id))
+#  client = relationship("Client", backref=backref("files", order_by=id))
 
   def __init__(self, client_id, path, side):
     # call base class constructor
-    bob.db.base.File.__init__(self, path = path)
-    self.client_id = client_id
-    self.probe_id = os.path.splitext(os.path.basename(path))[0] + '_' + side
+#    bob.db.base.File.__init__(self, path = path)
+    self.id = build_fileid (path, side)
+#    self.client_id = client_id
+    self.path = path
     self.side = side
 
-  def make_path(self, directory=None, extension=None, add_side=True):
+  def __repr__(self):
+    """This function describes how to convert a File object into a string."""
+    return "<File('%s': '%s', '%s')>" % (str(self.id), str(self.path), str(self.side))
+
+  def make_path(self, directory=None, extension='.sph', add_side=True):
     """Wraps the current path so that a complete path is formed
 
     Keyword Parameters:
@@ -101,11 +167,9 @@ class File(Base, bob.db.base.File):
     # assure that directory and extension are actually strings
     # create the path
     if add_side:
-      return str(self.path + '-' + self.side + (extension or ''))
-#      return str(os.path.join(directory or '', self.path + '-' + self.side + (extension or '')))
+      return str(os.path.join((directory or ''),self.path + '-' + self.side + (extension or '')) )
     else:
-      return str(self.path + (extension or ''))
-#      return str(os.path.join(directory or '', self.path + (extension or '')))
+      return str(os.path.join((directory or ''),self.path + (extension or ''))  )
 
   def load(self, directory=None, extension='.sph'):
     """Loads the data at the specified location and using the given extension.
@@ -150,8 +214,6 @@ class File(Base, bob.db.base.File):
       data = numpy.cast['float'](audio)
       return rate, data
     
-
-
 class Protocol(Base):
   """NIST SRE 2012 protocols"""
 
@@ -178,7 +240,8 @@ class ProtocolPurpose(Base):
   # Id of the protocol associated with this protocol purpose object
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
-  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
+#  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
+  group_choices = ('eval',)
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
   purpose_choices = ('enroll', 'probe')
