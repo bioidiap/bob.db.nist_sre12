@@ -31,24 +31,24 @@ import re
 import bob.db.base
 
 
-def build_fileid (path, side):
-
-  basename = os.path.splitext(os.path.basename(path))[0]
-
-  # check if basename includes sre12
-  msre12 = re.match (r'.*_sre12', basename)
-  bsre12 = True if msre12!= None else False
-
-  if bsre12:
-    # basename has sre12 already
-    return basename + '_' + side
-  else:
-    m = re.match (r'.*(SRE..).*',path)
-    if m != None:
-      sreid = m.group(1).lower()
-      return basename + '_' + sreid + '_' + side
-    else:
-      return basename + '_' + side
+def build_fileid (path, side):                                                                                                                               
+                                                                                                                                                             
+  basename = os.path.splitext(os.path.basename(path))[0]                                                                                                     
+                                                                                                                                                             
+  # check if basename includes sre12                                                                                                                         
+  msre12 = re.match (r'.*_sre12', basename)                                                                                                                  
+  bsre12 = True if msre12!= None else False                                                                                                                  
+                                                                                                                                                             
+  if bsre12:                                                                                                                                                 
+    # basename has sre12 already                                                                                                                             
+    return basename + '_' + side                                                                                                                             
+  else:                                                                                                                                                      
+    m = re.match (r'.*(SRE..).*',path)                                                                                                                       
+    if m != None:                                                                                                                                            
+      sreid = m.group(1).lower()                                                                                                                             
+      return basename + '_' + sreid + '_' + side                                                                                                             
+    else:                                                                                                                                                    
+      return basename + '_' + side  
 
 
 
@@ -58,65 +58,64 @@ protocolPurpose_file_association = Table('protocolPurpose_file_association', Bas
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
   Column('file_id',  String(20), ForeignKey('file.id')))
 
-protocolPurpose_client_association = Table('protocolPurpose_client_association', Base.metadata,
+protocolPurpose_model_association = Table('protocolPurpose_model_association', Base.metadata,
   Column('protocolPurpose_id', Integer, ForeignKey('protocolPurpose.id')),
-  Column('client_id',  String(20), ForeignKey('client.id')))
+  Column('model_id',  String(20), ForeignKey('model.id')))
 
 
-class ClientProbeLink(Base):
-  """Client/probe associations, i.e. trial target speaker / test segment"""
+class ModelProbeLink(Base):
+  """Model/probe associations, i.e. trial target speaker / test segment"""
 
-  __tablename__ = 'client_probe_link'
+  __tablename__ = 'model_probe_link'
 
-  client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
+  model_id = Column(String(20), ForeignKey('model.id'), primary_key=True)
   file_id = Column(String(20), ForeignKey('file.id'), primary_key=True)
   protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
 
-  def __init__(self, client_id, file_id, protocol_id):
-    self.client_id = client_id
+  def __init__(self, model_id, file_id, protocol_id):
+    self.model_id = model_id
     self.file_id = file_id
     self.protocol_id = protocol_id
 
   def __repr__(self):
-    return "ClientProbe(%s, %s)" % (self.client_id, self.file_id)
+    return "ModelProbe(%s, %s)" % (self.model_id, self.file_id)
 
-class ClientEnrollLink(Base):
-  """Client/enroll associations, i.e. files used for enrolling this client"""
+class ModelEnrollLink(Base):
+  """Model/enroll associations, i.e. files used for enrolling this model"""
 
-  __tablename__ = 'client_enroll_link'
+  __tablename__ = 'model_enroll_link'
 
-  client_id = Column(String(20), ForeignKey('client.id'), primary_key=True)
+  model_id = Column(String(20), ForeignKey('model.id'), primary_key=True)
   file_id = Column(String(20), ForeignKey('file.id'), primary_key=True)
   protocol_id = Column(String(20), ForeignKey('protocol.id'), primary_key=True)
 
-  def __init__(self, client_id, file_id, protocol_id):
-    self.client_id = client_id
+  def __init__(self, model_id, file_id, protocol_id):
+    self.model_id = model_id
     self.file_id = file_id
     self.protocol_id = protocol_id
 
   def __repr__(self):
-    return "ClientFile(%s, %s)" % (self.client_id, self.file_id)
+    return "ModelEnroll(%s, %s)" % (self.model_id, self.file_id)
 
 
-class Client(Base):
-  """Database clients, marked by an integer identifier and the group they belong to"""
+class Model(Base):
+  """Database models, marked by an integer identifier and the group they belong to"""
 
-  __tablename__ = 'client'
+  __tablename__ = 'model'
 
-  # Key identifier for the client
-  id = Column(String(20), primary_key=True) # speaker_pin
+  # Key identifier for the model
+  id = Column(String(20), primary_key=True)
   gender_choices = ('male', 'female')
   gender = Column(Enum(*gender_choices))
+  client_id = Column(String(20))
 
-  # For Python: A direct link to the File objects associated with this ProtcolPurpose
-#  probes = relationship("File", secondary=ClientProbeLink, backref=backref("client", order_by=id))
-
-  def __init__(self, id, gender):
+  def __init__(self, id, client_id, gender):
     self.id = id
+    self.client_id = client_id
     self.gender = gender
 
   def __repr__(self):
-    return "Client(%s, %s)" % (self.id, self.gender)
+    return "Model(%s, %s, %s)" % (self.id, self.gender, self.client_id)
 
 
 class File(Base, bob.db.base.File):
@@ -125,29 +124,24 @@ class File(Base, bob.db.base.File):
   __tablename__ = 'file'
 
   # Key identifier for the file
-#  id = Column(Integer, primary_key=True)
-  # Key identifier of the client associated with this file
   id = Column(String(20), primary_key=True)
-#  client_id = Column(String(20), ForeignKey('client.id')) # for SQL
   # Unique path to this file inside the database
   path = Column(String(150))
   side_choices = ('a','b')
   side = Column(Enum(*side_choices))
+  client_id = Column(String(20))
 
-  # for Python
-#  client = relationship("Client", backref=backref("files", order_by=id))
 
   def __init__(self, client_id, path, side):
     # call base class constructor
-#    bob.db.base.File.__init__(self, path = path)
     self.id = build_fileid (path, side)
-#    self.client_id = client_id
     self.path = path
+    self.client_id = client_id
     self.side = side
 
   def __repr__(self):
     """This function describes how to convert a File object into a string."""
-    return "<File('%s': '%s', '%s')>" % (str(self.id), str(self.path), str(self.side))
+    return "<File('%s': '%s', '%s', '%s')>" % (str(self.id), str(self.path), str(self.side), str(self.client_id))
 
   def make_path(self, directory=None, extension='.sph', add_side=True):
     """Wraps the current path so that a complete path is formed
@@ -240,7 +234,6 @@ class ProtocolPurpose(Base):
   # Id of the protocol associated with this protocol purpose object
   protocol_id = Column(Integer, ForeignKey('protocol.id')) # for SQL
   # Group associated with this protocol purpose object
-#  group_choices = ('eval-core-all','eval-core-c1','eval-core-c2','eval-core-c3','eval-core-c4','eval-core-c5')
   group_choices = ('eval',)
   sgroup = Column(Enum(*group_choices))
   # Purpose associated with this protocol purpose object
@@ -251,8 +244,8 @@ class ProtocolPurpose(Base):
   protocol = relationship("Protocol", backref=backref("purposes", order_by=id))
   # For Python: A direct link to the File objects associated with this ProtcolPurpose
   files = relationship("File", secondary=protocolPurpose_file_association, backref=backref("protocolPurposes", order_by=id))
-  # For Python: A direct link to the Client objects associated with this ProtcolPurpose
-  clients = relationship("Client", secondary=protocolPurpose_client_association, backref=backref("protocolPurposes", order_by=id))
+  # For Python: A direct link to the model objects associated with this ProtcolPurpose
+  models = relationship("Model", secondary=protocolPurpose_model_association, backref=backref("protocolPurposes", order_by=id))
 
   def __init__(self, protocol_id, sgroup, purpose):
     self.protocol_id = protocol_id

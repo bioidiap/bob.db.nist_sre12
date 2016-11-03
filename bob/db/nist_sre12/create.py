@@ -54,15 +54,15 @@ def read_eval_key(protocolDir, protocol, group):
 def add_files(session, all_files, verbose):
   """Add files to the NIST SRE 2012 database."""
 
-  def add_client(session, id, gender, verbose):
-    """Add a client to the database"""
-    if verbose>1: print("  Adding client '%s'..." %(id,))
+  def add_model(session, id, gender, spkid, verbose):
+    """Add a model to the database"""
+    if verbose>1: print("  Adding model '%s'..." %(id,))
 
-    client = Client(id, gender)
-    session.add(client)
+    model = Model(id, gender, spkid)
+    session.add(model)
     session.flush()
-    session.refresh(client)
-    return client
+    session.refresh(model)
+    return model
 
   def add_file(session, c_id, path, side, verbose):
     """Parse a single filename and add it to the list.
@@ -75,36 +75,41 @@ def add_files(session, all_files, verbose):
     return file_
 
   if verbose: print("Adding files ...")
-  client_dict = {}
+  model_dict = {}
   file_dict = {}
   f = open(all_files)
   for line in f:
-    path, side, c_id, gender = line.split()
-    # Append gender information to client id
-    # since there are lots of wrong gender information
-#    if gender == 'male': c_id = c_id + '_M'
-#    elif gender == 'female': c_id = c_id + '_F'
-#    else: raise RuntimeError("Gender unknown while parsing line '%s'." % line.strip())
-#    if (not c_id in client_dict) and c_id != 'M_ID_X_M' and c_id != 'M_ID_X_F':
-    if (not c_id in client_dict) and c_id != 'M_ID_X':
-      client_dict[c_id] = add_client(session, c_id, gender, verbose)
-    if not (path,side) in file_dict:
-      file_dict[(path,side)] = add_file(session, c_id, path, side, verbose)
-  return (file_dict, client_dict)
+    s = line.split()
+    if len(s)==4:
+      path, side, m_id, gender = s
+      if (not m_id in model_dict) and m_id != 'M_ID_X':
+        model_dict[m_id] = add_model(session, m_id, 'C_ID_X', gender, verbose)
+      if not (path,side) in file_dict:
+        file_dict[(path,side)] = add_file(session, 'C_ID_X', path, side, verbose)
+    elif len(s)==5:
+      path, side, m_id, spkid, gender = s
+      if (not m_id in model_dict) and m_id != 'M_ID_X':
+        model_dict[m_id] = add_model(session, m_id, spkid, gender, verbose)
+      if not (path,side) in file_dict:
+        file_dict[(path,side)] = add_file(session, spkid, path, side, verbose)
+    else:
+      raise RuntimeError("Line could not be parsed: '%s'" % line)
+
+  return (file_dict, model_dict)
 
 
-def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
+def add_protocols(session, protocol_dir, file_dict, model_dict, verbose):
   """Adds protocols"""
 
   groups = os.listdir(protocol_dir)
-  protocolPurpose_list = [ 
+  protocolPurpose_list = [
     ('core-all', 'enroll', 'for_models.lst'), ('core-all', 'probe', 'for_probes.lst'),
     ('core-c1', 'enroll', 'for_models.lst'), ('core-c1', 'probe', 'for_probes.lst'),
     ('core-c2', 'enroll', 'for_models.lst'), ('core-c2', 'probe', 'for_probes.lst'),
     ('core-c3', 'enroll', 'for_models.lst'), ('core-c3', 'probe', 'for_probes.lst'),
     ('core-c4', 'enroll', 'for_models.lst'), ('core-c4', 'probe', 'for_probes.lst'),
     ('core-c5', 'enroll', 'for_models.lst'), ('core-c5', 'probe', 'for_probes.lst'),
-]
+] 
 
   for group in groups:
     protocols = os.listdir(os.path.join(protocol_dir,group))
@@ -127,35 +132,34 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
         session.flush()
         session.refresh(pu)
 
-        pu_client_dict = {}
+        pu_model_dict = {}
         # Add files attached with this protocol purpose
         f = open(os.path.join(protocol_dir, group, proto, purpose[2]))
         for line in f:
           l = line.split()
           path = l[0]
           side = l[1]
-          c_id = l[2]
+          m_id = l[2]
 
-          # add files and clients into purpose entry (either enroll or probe)
+          # add files and models into purpose entry (either enroll or probe)
           if (path,side) in file_dict:
             if verbose>1: print("    Adding protocol file to purpose %s '%s %s'..." % (purpose[1], path, side, ))
             # add file into files field of purpose record
             pu.files.append(file_dict[(path,side)])
-#            c_id = file_dict[(path,side)].client_id
             if purpose[1] == 'enroll':
-              ce = ClientEnrollLink (c_id, build_fileid(path, side), p.id)
-              session.add(ce)
+              me = ModelEnrollLink (m_id, build_fileid(path, side), p.id)
+              session.add(me)
               session.flush()
-              session.refresh(ce)
+              session.refresh(me)
  
-            # If Client does not exist, add it to the enroll purpose
-            if (not c_id in pu_client_dict) and c_id != 'M_ID_X':
-              if verbose>1: print("    Adding protocol client to purpose %s '%s'..." % (purpose[1], c_id, ))
-              if c_id in client_dict:
-                pu.clients.append(client_dict[c_id])
-                pu_client_dict[c_id] = client_dict[c_id]
+            # If model does not exist, add it to the enroll purpose
+            if (not m_id in pu_model_dict) and m_id != 'M_ID_X':
+              if verbose>1: print("    Adding protocol client to purpose %s '%s'..." % (purpose[1], m_id, ))
+              if m_id in model_dict:
+                pu.models.append(model_dict[m_id])
+                pu_model_dict[m_id] = model_dict[m_id]
               else:
-                raise RuntimeError("Client '%s' is in the protocol list but not in the database" % c_id)
+                raise RuntimeError("Model '%s' is in the protocol list but not in the database" % m_id)
           else:
             raise RuntimeError("File '%s' is in the protocol list but not in the database" % (path, side))
 
@@ -167,11 +171,10 @@ def add_protocols(session, protocol_dir, file_dict, client_dict, verbose):
       ntotal = sum(len(v) for v in key.itervalues())
       if verbose>1:
         print("  Adding trials to protocol %s") % p.name
-      for client_id in key.keys():
-        for k in key[client_id]:
+      for model_id in key.keys():
+        for k in key[model_id]:
           probe_id = k[0]
-#          if verbose>1: print("  Adding trial to protocol %s (%s %s %s)..." % (p.name, client_id, probe_id, target))
-          trial = ClientProbeLink (client_id, probe_id, p.id)
+          trial = ModelProbeLink (model_id, probe_id, p.id)
           session.add(trial)
           session.flush()
           session.refresh(trial)
@@ -209,8 +212,8 @@ def create(args):
   # the real work...
   create_tables(args)
   s = session_try_nolock(args.type, args.files[0], echo=(args.verbose > 2))
-  file_dict, client_dict = add_files(s, os.path.join(args.datadir, 'all_files.lst'), args.verbose)
-  add_protocols(s, os.path.join(args.datadir, 'protocols'), file_dict, client_dict, args.verbose)
+  file_dict, model_dict = add_files(s, os.path.join(args.datadir, 'all_files.lst'), args.verbose)
+  add_protocols(s, os.path.join(args.datadir, 'protocols'), file_dict, model_dict, args.verbose)
   s.commit()
   s.close()
 
@@ -222,8 +225,6 @@ def add_command(subparsers):
   parser.add_argument('-R', '--recreate', action='store_true', help="If set, I'll first erase the current database")
   parser.add_argument('-v', '--verbose', action='count', help="Do SQL operations in a verbose way")
   from pkg_resources import resource_filename
-#  prism_basedir = 'prism'
-#  prism_path = resource_filename(__name__, prism_basedir)
   sre12_basedir = 'sre12'
   sre12_path = resource_filename(__name__, sre12_basedir)
   parser.add_argument('-D', '--datadir', metavar='DIR', default=sre12_path, help="Change the path to the containing information about the NIST SRE 2012 database.")
