@@ -21,7 +21,7 @@ http://www.nist_sre12.org/
 """
 
 from .query import Database
-from .models import Client, File, Protocol, ProtocolPurpose
+from .models import Model, File, Protocol, ProtocolPurpose
 
 def get_config():
   """Returns a string containing the configuration information.
