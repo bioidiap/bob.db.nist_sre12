@@ -26,11 +26,6 @@ import sys
 import re
 import tarfile
 
-#sre12dir = '/idiap/resource/database/nist_sre/SRE16/LDC2016E45_2012_NIST_SRE'
-#sre10dir = '/idiap/resource/database/nist_sre/SRE10/eval'
-#sre08dir = '/idiap/resource/database/nist_sre/SRE08'
-#sre06dir = '/idiap/resource/database/nist_sre/SRE06/r108_1_1'
-
 sre12dir = 'SRE16/LDC2016E45_2012_NIST_SRE'
 sre10dir = 'SRE10/eval'
 sre08dir = 'SRE08'
@@ -258,11 +253,11 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
             side = x[1]
             gend = 'male' if spkdata[spkid]['gender'] == 'm' else 'female'
             if (path,side) not in included_models:
-              fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+              fp.write(path + ' ' + side + ' ' + spkid + ' ' + spkid + ' ' + gend + '\n')
               included_models[(path,side)] = True
 
             if (path,side) not in included_all:
-              fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+              fpall.write(path + ' ' + side + ' ' + spkid + ' ' + spkid + ' ' + gend + '\n')
               included_all[(path,side)] = True
 
       with open (dirname + '/for_probes.lst','w') as fp:
@@ -271,14 +266,15 @@ with open (scriptDir + '/' + 'all_files.lst','w') as fpall:
         for test in tests:
           path, ext = os.path.splitext(test[0])
           side = test[1]
-          spkid = 'M_ID_X'
+          modelid = 'M_ID_X'
+          spkid = 'C_ID_X'
           gend = 'male' if spkdata[test[2]]['gender'] == 'm' else 'female'
           if (path,side) not in included_files:
-            fp.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+            fp.write(path + ' ' + side + ' ' + modelid + ' ' + spkid + ' ' + gend + '\n')
             included_files[(path,side)] = True
 
           if (path,side) not in included_all:
-            fpall.write(path + ' ' + side + ' ' + spkid + ' ' + gend + '\n')
+            fpall.write(path + ' ' + side + ' ' + modelid + ' ' + spkid + ' ' + gend + '\n')
             included_all[(path,side)] = True
 
       with open (dirname + '/key.lst','w') as fp:
