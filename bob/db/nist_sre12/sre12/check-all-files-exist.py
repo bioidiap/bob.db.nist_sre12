@@ -19,9 +19,16 @@
 # Script to check that all filenames in all_files.lst exist in the filesystem.
 
 import os.path
+import sys
 
 filelist = 'all_files.lst'
+prefix='DATABASE_DIRECTORY_PREFIX'
 
+if prefix=='DATABASE_DIRECTORY_PREFIX':
+  print ('please replace variable ''prefix'' in script ''check-all-files-exist.py'' with the NIST SRE database directory in your system.')
+  sys.exit(1)
+
+ext='.sph'
 
 step = 2000
 ok = 0
@@ -31,6 +38,7 @@ with open(filelist) as fp:
   for fn in fp.readlines():
     fn = fn.strip()
     path = fn.split()[0]
+    path = os.path.join(prefix,path+ext)
     fileno += 1
     if os.path.isfile(path):
       ok += 1
