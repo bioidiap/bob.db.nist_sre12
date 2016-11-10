@@ -37,25 +37,33 @@ To generate the NIST SRE 2012 database do the following:
 
 # Generate file lists required to populate the SQL database
 
-  - Change base directories for NIST SRE 2006, 2008, 2010 and 2012 by editing bob/db/nist_sre12/sre12/generate-file-lists.py
+  - Change to sre12 file list directory:
+   
+      cd bob/db/nist_sre12/sre12/generate-file-lists.py
 
-  - Create file lists and key files for (all, male, female) protocols and (all, c1, c2, c3, c4, c5) NIST SRE 2012 core conditions
+  - Create file lists and key files for NIST SRE 2012 protocols and conditions
 
-    ./generate-file-lists.py
+      ./generate-file-lists.py
 
-  - Check that file lists point to actual files
+  - You can check that file lists point to actual files by first editing the file
 
-    ./check-all-files-exist.py
+      ./check-all-files-exist.py
+
+    and assigning variable 'prefix'
+
+      prefix='DATABASE_DIRECTORY_PREFIX'
+
+    the actual path of the NIST SRE.
 
 
-# Create and populate SQLite database  (file, client, protocol, protocol_purpose) tables
+# Create and populate SQLite database tables
 
   ./bin/python ./bin/bob_dbmanage.py nist_sre12 create -vv -R
 
 
 # Double check the files in the SQLite database point to actual files
 
-  ./bin/bob_dbmanage.py nist_sre12 checkfiles -e .sph
+  ./bin/bob_dbmanage.py nist_sre12 checkfiles -e .sph -d DATABASE_DIRECTORY_PREFIX
 
 
 Contact
