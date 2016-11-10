@@ -30,6 +30,9 @@ import tempfile
 import re
 import bob.db.base
 
+import logging                                                                                                                                               
+logger = logging.getLogger("bob.db.nist_sre12")
+
 
 def build_fileid (path, side):                                                                                                                               
                                                                                                                                                              
@@ -185,6 +188,7 @@ class File(Base, bob.db.base.File):
     """
     # get the path
     abspath = self.make_path(directory or '', extension or '', add_side=False)
+#    logger.warn('abspath=' + abspath + '\n')
     with tempfile.NamedTemporaryFile(suffix='.wav') as ftmp:
       cmd = ['sph2pipe']
       if self.side == 'a':
@@ -201,7 +205,13 @@ class File(Base, bob.db.base.File):
           '-f rif',
           abspath,
           ftmp.name]
+#      logger.warn('/bin/bash -c \"' + ' '.join(cmd) + '\"')
+#      os.system ('/bin/bash -c \"' + ' '.join(cmd) + '\"')
       os.system (' '.join(cmd))
+#      logger.warn('after cmd' + '\n')
+
+#      if os.path.isfile(ftmp.name):
+#        logger.warn('exists')
 
       # read mono wav file
       rate, audio = scipy.io.wavfile.read(ftmp.name)
