@@ -154,7 +154,7 @@ def add_protocols(session, protocol_dir, file_dict, model_dict, verbose):
  
             # If model does not exist, add it to the enroll purpose
             if (not m_id in pu_model_dict) and m_id != 'M_ID_X':
-              if verbose>1: print("    Adding protocol client to purpose %s '%s'..." % (purpose[1], m_id, ))
+              if verbose>1: print("    Adding protocol model to purpose %s '%s'..." % (purpose[1], m_id, ))
               if m_id in model_dict:
                 pu.models.append(model_dict[m_id])
                 pu_model_dict[m_id] = model_dict[m_id]
