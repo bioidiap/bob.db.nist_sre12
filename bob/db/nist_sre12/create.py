@@ -165,7 +165,6 @@ def add_protocols(session, protocol_dir, file_dict, model_dict, verbose):
 
       # Add trial entries
       key = read_eval_key (protocol_dir, proto , group)
-      # fill probes field of client table with thhe tesrt segments for each target speaker
       n = 0
       nextn = 10000
       ntotal = sum(len(v) for v in key.itervalues())
