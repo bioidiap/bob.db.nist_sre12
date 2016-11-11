@@ -50,13 +50,14 @@ The Database Interface
 
 The :py:class:`bob.db.nist_sre12.Database` complies with the standard biometric verification database as described in :ref:`commons`, implementing the interface :py:class:`bob.db.base.SQLiteDatabase`.
 
-.. SQL Tables::
+  .. SQL Tables::
+
    The DB interface implements File, Model, Protocol, ProtocolPurpose, ModelEnrollLink and ModelProbeLink tables, extending the existing SQLiteDatabase implementations in other Bob packages. This is required to cope with the specificities of the NIST SRE.
 
-   .. Physical and logical file names::
+   - Physical and logical file names:
       Speech databases use multi-channel, typically stereo, files to encode multiple conversation sides into a single file. A single audio file in SPHERE format is read per conversation, while multiple logical sides are generated to process the data for each speaker separately.
 
-   .. Missing client identifiers:
+   - Missing client identifiers:
       The NIST SREs do not provide a speaker identifier, i.e. a client ID, for all of the speech file sides in the database. Instead, the protocol specifies what pairs of models and file side to test for the evaluation. We opted for using two additional tables in the interface, ModelEnrollLink and ModelProbeLink, to store what file sides should be used for enrolling each model and what file sides should be tested against each model. Note that these tables, especially ModelProbeLink, can be populated with millions of rows, slowing down the creation and query of the database. 
 
 
