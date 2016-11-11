@@ -50,7 +50,8 @@ The Database Interface
 
 The :py:class:`bob.db.nist_sre12.Database` complies with the standard biometric verification database as described in :ref:`commons`, implementing the interface :py:class:`bob.db.base.SQLiteDatabase`.
 
-  .. SQL Tables::
+Implementation
+--------------
 
    The DB interface implements File, Model, Protocol, ProtocolPurpose, ModelEnrollLink and ModelProbeLink tables, extending the existing SQLiteDatabase implementations in other Bob packages. This is required to cope with the specificities of the NIST SRE.
 
