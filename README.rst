@@ -39,7 +39,7 @@ To generate the NIST SRE 2012 database do the following:
 
   - Change to sre12 file list directory:
    
-      cd bob/db/nist_sre12/sre12/generate-file-lists.py
+      cd bob/db/nist_sre12/sre12
 
   - Create file lists and key files for NIST SRE 2012 protocols and conditions
 
