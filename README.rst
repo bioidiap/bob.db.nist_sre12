@@ -43,16 +43,13 @@ To generate and populate the NIST SRE 2012 database do the following:
 
       ./generate-file-lists.py
 
-  - You can check that file lists point to actual files by first editing the file
+  - You can check that file lists point to actual files by running 
 
       ./check-all-files-exist.py
 
-    and assigning variable 'prefix'
+    after assigning variable 'prefix' your SRE12 base path
 
       prefix='DATABASE_DIRECTORY_PREFIX'
-
-    the actual path of the NIST SRE.
-
 
   - Populate SQL database
 
