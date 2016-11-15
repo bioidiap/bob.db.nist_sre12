@@ -33,9 +33,7 @@ provided by the distribution, bootstrap and buildout this package::
   $ ./bin/buildout
 
 
-To generate the NIST SRE 2012 database do the following:
-
-# Generate file lists required to populate the SQL database
+To generate and populate the NIST SRE 2012 database do the following:
 
   - Change to sre12 file list directory:
    
@@ -56,9 +54,9 @@ To generate the NIST SRE 2012 database do the following:
     the actual path of the NIST SRE.
 
 
-# Create and populate SQLite database tables
+  - Populate SQL database
 
-  ./bin/python ./bin/bob_dbmanage.py nist_sre12 create -vv -R
+    ./bin/python ./bin/bob_dbmanage.py nist_sre12 create -vv -R
 
 
 # Double check the files in the SQLite database point to actual files
