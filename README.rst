@@ -59,7 +59,7 @@ To generate and populate the NIST SRE 2012 database do the following:
     ./bin/python ./bin/bob_dbmanage.py nist_sre12 create -vv -R
 
 
-# Double check the files in the SQLite database point to actual files
+Double check the files in the SQLite database point to actual files
 
   ./bin/bob_dbmanage.py nist_sre12 checkfiles -e .sph -d DATABASE_DIRECTORY_PREFIX
 
