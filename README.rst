@@ -59,7 +59,7 @@ You can either download the SQLite DB file
 
   - Populate SQL database
 
-    ./bin/python ./bin/bob_dbmanage.py nist_sre12 create -vv -R
+    ./bin/bob_dbmanage.py nist_sre12 create -vv -R
 
 
 3. To double check the files in the SQLite database point to actual files
