@@ -32,8 +32,14 @@ provided by the distribution, bootstrap and buildout this package::
   $ python bootstrap-buildout.py
   $ ./bin/buildout
 
+You can either download the SQLite DB file
 
-To generate and populate the NIST SRE 2012 database do the following:
+1. To download a copy of an already populated SQLite DB
+
+  ./bin/bob_dbmanage.py nist_sre12 download
+
+
+2. To generate and populate the NIST SRE 2012 database do the following:
 
   - Change to sre12 file list directory:
    
@@ -56,7 +62,7 @@ To generate and populate the NIST SRE 2012 database do the following:
     ./bin/python ./bin/bob_dbmanage.py nist_sre12 create -vv -R
 
 
-Double check the files in the SQLite database point to actual files
+3. To double check the files in the SQLite database point to actual files
 
   ./bin/bob_dbmanage.py nist_sre12 checkfiles -e .sph -d DATABASE_DIRECTORY_PREFIX
 
