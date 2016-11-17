@@ -61,7 +61,7 @@ class Database(bob.db.base.SQLiteDatabase):
       The protocol to consider ('female', 'male')
 
     groups
-      The groups to which the clients belong ('short2-short3-all')
+      The groups to which the clients belong ('core-all')
 
     filter_ids_unknown
       Do not add the ids unknown 'F_ID_X_F' and 'M_ID_X_M'
@@ -200,7 +200,7 @@ class Database(bob.db.base.SQLiteDatabase):
     Returns: A list of files which have the given properties.
     """
 
-    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names(), 'short2-short3-all')
+    protocol = self.check_parameters_for_validity(protocol, "protocol", self.protocol_names(), 'core-all')
     purposes = self.check_parameters_for_validity(purposes, "purpose", self.purposes())
     groups = self.check_parameters_for_validity(groups, "group", self.groups())
 
