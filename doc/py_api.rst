@@ -6,6 +6,4 @@
  Python API
 ============
 
-.. todo:: The link for the database isn't working any more...
-
 .. automodule:: bob.db.nist_sre12
