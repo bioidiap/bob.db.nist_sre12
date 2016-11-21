@@ -39,7 +39,7 @@ They refer to the core condition of the evaluation along with its 5 subcondition
 The Database Interface
 ----------------------
 
-The :py:class:`bob.db.nist_sre12.Database` complies with the standard biometric verification database as described in :ref:`commons`, implementing the interface :py:class:`bob.db.base.SQLiteDatabase`. This package implements the low-level DB interface while a high-level interface for SRE12 is implemented in spear_.
+The :py:class:`bob.db.nist_sre12.Database` complies with the standard biometric verification database, implementing the interface :py:class:`bob.db.base.SQLiteDatabase`. This package implements the low-level DB interface while a high-level interface for SRE12 is implemented in spear_.
 
 Implementation details
 ----------------------
