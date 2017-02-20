@@ -5,8 +5,8 @@
    :target: http://pythonhosted.org/bob.db.nist_sre12/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
    :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.nist_sre12/master/index.html
-.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/v3.0.0/build.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/v3.0.0
+.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12
 .. image:: http://img.shields.io/pypi/v/bob.db.nist_sre12.svg
