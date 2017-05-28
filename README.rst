@@ -7,6 +7,8 @@
    :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.nist_sre12/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/master
+.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/coverage.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12
 .. image:: http://img.shields.io/pypi/v/bob.db.nist_sre12.svg
@@ -26,11 +28,10 @@ Bob_. This package contains an interface for the evaluation protocol of the `201
 Installation
 ------------
 
-Follow our `installation`_ instructions. Then, using the Python interpreter
-provided by the distribution, bootstrap and buildout this package::
+Complete Bob's `installation`_ instructions. Then, to install this pacakge,
+run::
 
-  $ python bootstrap-buildout.py
-  $ ./bin/buildout
+  $ conda install bob.db.nist_sre12
 
 You can either download the SQLite DB file
 

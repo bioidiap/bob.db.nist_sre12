@@ -53,7 +53,7 @@ stages:
 
 
 # Template for the wheel uploading stage
-# Needs to run against all combinations of python and operating systems
+# Needs to run against one supported architecture, platform and python version
 .wheels_template: &wheels_job
   stage: wheels
   environment: intranet
@@ -114,6 +114,7 @@ build_linux_27:
   <<: *build_job
   variables: &linux_27_build_variables
     PYTHON_VERSION: "2.7"
+    WHEEL_TAG: "py27"
   tags:
     - conda-linux
 
@@ -142,36 +143,12 @@ deploy_linux_27:
     - conda-linux
 
 
-# Linux + Python 3.4: Builds and tests
-build_linux_34:
-  <<: *build_job
-  variables: &linux_34_build_variables
-    PYTHON_VERSION: "3.4"
-  tags:
-    - conda-linux
-
-test_linux_34:
-  <<: *test_job
-  variables: *linux_34_build_variables
-  dependencies:
-    - build_linux_34
-  tags:
-    - conda-linux
-
-wheels_linux_34:
-  <<: *wheels_job
-  variables: *linux_34_build_variables
-  dependencies:
-    - build_linux_34
-  tags:
-    - conda-linux
-
-
 # Linux + Python 3.5: Builds, tests and uploads wheel
 build_linux_35:
   <<: *build_job
   variables: &linux_35_build_variables
     PYTHON_VERSION: "3.5"
+    WHEEL_TAG: "py3"
   tags:
     - conda-linux
 
@@ -200,11 +177,30 @@ docs_linux_35:
     - conda-linux
 
 
+# Linux + Python 3.6: Builds and tests
+build_linux_36:
+  <<: *build_job
+  variables: &linux_36_build_variables
+    PYTHON_VERSION: "3.6"
+    WHEEL_TAG: "py3"
+  tags:
+    - conda-linux
+
+test_linux_36:
+  <<: *test_job
+  variables: *linux_36_build_variables
+  dependencies:
+    - build_linux_36
+  tags:
+    - conda-linux
+
+
 # Mac OSX + Python 2.7: Builds and tests
 build_macosx_27:
   <<: *build_job
   variables: &macosx_27_build_variables
     PYTHON_VERSION: "2.7"
+    WHEEL_TAG: "py27"
   tags:
     - conda-macosx
 
@@ -216,45 +212,13 @@ test_macosx_27:
   tags:
     - conda-macosx
 
-wheels_macosx_27:
-  <<: *wheels_job
-  variables: *macosx_27_build_variables
-  dependencies:
-    - build_macosx_27
-  tags:
-    - conda-macosx
-
-
-# Mac OSX + Python 3.4: Builds and tests
-build_macosx_34:
-  <<: *build_job
-  variables: &macosx_34_build_variables
-    PYTHON_VERSION: "3.4"
-  tags:
-    - conda-macosx
-
-test_macosx_34:
-  <<: *test_job
-  variables: *macosx_34_build_variables
-  dependencies:
-    - build_macosx_34
-  tags:
-    - conda-macosx
-
-wheels_macosx_34:
-  <<: *wheels_job
-  variables: *macosx_34_build_variables
-  dependencies:
-    - build_macosx_34
-  tags:
-    - conda-macosx
-
 
 # Mac OSX + Python 3.5: Builds and tests
 build_macosx_35:
   <<: *build_job
   variables: &macosx_35_build_variables
     PYTHON_VERSION: "3.5"
+    WHEEL_TAG: "py3"
   tags:
     - conda-macosx
 
@@ -266,10 +230,20 @@ test_macosx_35:
   tags:
     - conda-macosx
 
-wheels_macosx_35:
-  <<: *wheels_job
-  variables: *macosx_35_build_variables
+
+# Mac OSX + Python 3.6: Builds and tests
+build_macosx_36:
+  <<: *build_job
+  variables: &macosx_36_build_variables
+    PYTHON_VERSION: "3.6"
+    WHEEL_TAG: "py3"
+  tags:
+    - conda-macosx
+
+test_macosx_36:
+  <<: *test_job
+  variables: *macosx_36_build_variables
   dependencies:
-    - build_macosx_35
+    - build_macosx_36
   tags:
     - conda-macosx
