@@ -2,9 +2,9 @@
 .. Wed Aug 24 16:40:00 CEST 2016
 
 .. image:: http://img.shields.io/badge/docs-stable-yellow.svg
-   :target: http://pythonhosted.org/bob.db.nist_sre12/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.nist_sre12/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
-   :target: https://www.idiap.ch/software/bob/docs/latest/bob/bob.db.nist_sre12/master/index.html
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.nist_sre12/master/index.html
 .. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/build.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/master
 .. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/coverage.svg
@@ -12,8 +12,6 @@
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12
 .. image:: http://img.shields.io/pypi/v/bob.db.nist_sre12.svg
-   :target: https://pypi.python.org/pypi/bob.db.nist_sre12
-.. image:: http://img.shields.io/pypi/dm/bob.db.nist_sre12.svg
    :target: https://pypi.python.org/pypi/bob.db.nist_sre12
 
 
@@ -28,7 +26,7 @@ Bob_. This package contains an interface for the evaluation protocol of the `201
 Installation
 ------------
 
-Complete Bob's `installation`_ instructions. Then, to install this pacakge,
+Complete Bob's `installation`_ instructions. Then, to install this package,
 run::
 
   $ conda install bob.db.nist_sre12
@@ -43,14 +41,14 @@ You can either download the SQLite DB file
 2. To generate and populate the NIST SRE 2012 database do the following:
 
   - Change to sre12 file list directory:
-   
+
       cd bob/db/nist_sre12/sre12
 
   - Create file lists and key files for NIST SRE 2012 protocols and conditions
 
       ./generate-file-lists.py
 
-  - You can check that file lists point to actual files by running 
+  - You can check that file lists point to actual files by running
 
       ./check-all-files-exist.py
 
