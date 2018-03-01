@@ -21,13 +21,16 @@ requirements:
   host:
     - python {{ python }}
     - setuptools {{ setuptools }}
+    - numpy {{ numpy }}
+    - scipy {{ scipy }}
     - six {{ six }}
+    - bob.extension
     - bob.db.base
-    - scipy
   run:
     - python
     - setuptools
     - numpy
+    - scipy
     - six
 
 test:
@@ -43,7 +46,6 @@ test:
     - bob-devel {{ bob_devel }}.*
     - nose
     - coverage
-    - scipy
     - sphinx
     - sphinx_rtd_theme
 
