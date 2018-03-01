@@ -1,3 +1,4 @@
 setuptools
 six
 bob.db.base
+scipy

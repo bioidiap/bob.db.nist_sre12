@@ -27,6 +27,7 @@ requirements:
   run:
     - python
     - setuptools
+    - numpy
     - six
 
 test:
@@ -42,6 +43,7 @@ test:
     - bob-devel {{ bob_devel }}.*
     - nose
     - coverage
+    - scipy
     - sphinx
     - sphinx_rtd_theme
 
