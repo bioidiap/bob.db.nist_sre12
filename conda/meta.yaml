@@ -23,6 +23,7 @@ requirements:
     - setuptools {{ setuptools }}
     - six {{ six }}
     - bob.db.base
+    - scipy
   run:
     - python
     - setuptools
