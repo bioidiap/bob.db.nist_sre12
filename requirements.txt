@@ -1,6 +1,5 @@
 setuptools
 bob.extension
 bob.db.base
-six
 numpy
 scipy

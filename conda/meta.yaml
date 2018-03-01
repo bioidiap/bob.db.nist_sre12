@@ -23,7 +23,6 @@ requirements:
     - setuptools {{ setuptools }}
     - numpy {{ numpy }}
     - scipy {{ scipy }}
-    - six {{ six }}
     - bob.extension
     - bob.db.base
   run:
@@ -31,7 +30,6 @@ requirements:
     - setuptools
     - numpy
     - scipy
-    - six
 
 test:
   imports:
