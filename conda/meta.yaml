@@ -21,12 +21,15 @@ requirements:
   host:
     - python {{ python }}
     - setuptools {{ setuptools }}
-    - six {{ six }}
+    - numpy {{ numpy }}
+    - scipy {{ scipy }}
+    - bob.extension
     - bob.db.base
   run:
     - python
     - setuptools
-    - six
+    - numpy
+    - scipy
 
 test:
   imports:

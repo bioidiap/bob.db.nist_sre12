@@ -31,6 +31,11 @@ logger = bob.core.log.setup("bob.db.nist_sre12")
 
 SQLITE_FILE = Interface().files()[0]
 
+try:
+  basestring
+except NameError:
+  basestring = str
+
 
 class Database(bob.db.base.SQLiteDatabase):
   """The dataset class opens and maintains a connection opened to the Database.
@@ -208,10 +213,9 @@ class Database(bob.db.base.SQLiteDatabase):
         purposes, "purpose", self.purposes())
     groups = self.check_parameters_for_validity(groups, "group", self.groups())
 
-    import six
     if (model_ids is None):
       model_ids = ()
-    elif (isinstance(model_ids, six.string_types)):
+    elif (isinstance(model_ids, basestring)):
       model_ids = (model_ids,)
 
     # Now query the database
