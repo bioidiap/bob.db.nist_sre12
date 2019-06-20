@@ -1,14 +1,14 @@
 .. vim: set fileencoding=utf-8 :
 .. Wed Aug 24 16:40:00 CEST 2016
 
-.. image:: http://img.shields.io/badge/docs-v3.0.6-yellow.svg
-   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.nist_sre12/v3.0.6/index.html
+.. image:: http://img.shields.io/badge/docs-stable-yellow.svg
+   :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.nist_sre12/stable/index.html
 .. image:: http://img.shields.io/badge/docs-latest-orange.svg
    :target: https://www.idiap.ch/software/bob/docs/bob/bob.db.nist_sre12/master/index.html
-.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/v3.0.6/build.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/v3.0.6
-.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/v3.0.6/coverage.svg
-   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/v3.0.6
+.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/build.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/master
+.. image:: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/badges/master/coverage.svg
+   :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12/commits/master
 .. image:: https://img.shields.io/badge/gitlab-project-0000c0.svg
    :target: https://gitlab.idiap.ch/bob/bob.db.nist_sre12
 .. image:: http://img.shields.io/pypi/v/bob.db.nist_sre12.svg
